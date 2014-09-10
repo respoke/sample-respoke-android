@@ -1,6 +1,11 @@
-Respoke/.gradle
-Respoke/local.properties
-Respoke/.idea/workspace.xml
-Respoke/.idea/libraries
+/Respoke/.gradle
+/Respoke/local.properties
+/Respoke/.idea/workspace.xml
+/Respoke/.idea/libraries
 .DS_Store
-Respoke/build
+/Respoke/build
+/trunk/
+/chromium_gn/
+/chromium_deps/
+/.gclient_entries
+/depot_tools/
