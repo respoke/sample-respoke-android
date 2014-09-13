@@ -20,5 +20,6 @@ android {
 }
 
 dependencies {
+    compile project(':respokeSDK')
     compile fileTree(dir: 'libs', include: ['*.jar'])
 }
