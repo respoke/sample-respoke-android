@@ -10,11 +10,13 @@ import android.widget.EditText;
 import android.widget.TextView;
 
 import com.digium.respokesdk.Respoke;
+import com.digium.respokesdk.RespokeCall;
 import com.digium.respokesdk.RespokeClient;
+import com.digium.respokesdk.RespokeClientDelegate;
 import com.digium.respokesdk.RestAPI.*;
 
 
-public class ConnectActivity extends Activity {
+public class ConnectActivity extends Activity implements RespokeClientDelegate {
 
     private EditText endpointTextBox = null;
     private EditText groupTextBox = null;
@@ -54,10 +56,40 @@ public class ConnectActivity extends Activity {
 
     public void connect(View view) {
         String endpointID = endpointTextBox.getText().toString();
-        String groupID = groupTextBox.getText().toString();
         String appID = "2b446810-6d92-4fa4-826a-2eabced82d60";
 
-        RespokeClient client = Respoke.sharedInstance().createClient();
-        client.connect(endpointID, appID, true, null, this.getApplicationContext());
+        ContactManager.sharedInstance().sharedClient = Respoke.sharedInstance().createClient();
+        ContactManager.sharedInstance().sharedClient.delegate = this;
+        ContactManager.sharedInstance().sharedClient.connect(endpointID, appID, true, null, this.getApplicationContext());
+    }
+
+
+    // RespokeClientDelegate methods
+
+
+    public void onConnect(RespokeClient sender) {
+        String defaultGroupID = "RespokeTeam";
+        String groupID = groupTextBox.getText().toString();
+
+        if ((groupID == null) && (groupID.length() <= 0)) {
+            groupID = defaultGroupID;
+        }
+
+        ContactManager.sharedInstance().sharedClient.joinGroup(groupID);
+    }
+
+
+    public void onDisconnect(RespokeClient sender, boolean reconnecting) {
+
+    }
+
+
+    public void onError(RespokeClient sender, String errorMessage) {
+
+    }
+
+
+    public void onCall(RespokeClient sender, RespokeCall call) {
+
     }
 }
