@@ -1,6 +1,7 @@
 package com.digium.respoke;
 
 import android.app.Activity;
+import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -13,10 +14,18 @@ import com.digium.respokesdk.Respoke;
 import com.digium.respokesdk.RespokeCall;
 import com.digium.respokesdk.RespokeClient;
 import com.digium.respokesdk.RespokeClientDelegate;
+import com.digium.respokesdk.RespokeGroup;
+import com.digium.respokesdk.RespokeJoinGroupCompletionDelegate;
+import com.digium.respokesdk.RespokeTaskCompletionDelegate;
 import com.digium.respokesdk.RestAPI.*;
 
 
 public class ConnectActivity extends Activity implements RespokeClientDelegate {
+
+    private static final String RESPOKE_SETTINGS = "RESPOKE_SETTINGS";
+    private static final String LAST_USER_KEY = "LAST_USER_KEY";
+    private static final String LAST_GROUP_KEY = "LAST_GROUP_KEY";
+    private static final String LAST_APP_ID_KEY = "LAST_APP_ID_KEYs";
 
     private EditText endpointTextBox = null;
     private EditText groupTextBox = null;
@@ -30,6 +39,18 @@ public class ConnectActivity extends Activity implements RespokeClientDelegate {
 
         endpointTextBox = (EditText)findViewById(R.id.editText1);
         groupTextBox = (EditText)findViewById(R.id.editText2);
+
+        SharedPreferences settings = this.getApplicationContext().getSharedPreferences(RESPOKE_SETTINGS, 0);
+        String lastUserID = settings.getString(LAST_USER_KEY, null);
+        String lastGroupID = settings.getString(LAST_GROUP_KEY, null);
+
+        if (null != lastUserID) {
+            endpointTextBox.setText(lastUserID);
+        }
+
+        if (null != lastGroupID) {
+            groupTextBox.setText(lastGroupID);
+        }
     }
 
 
@@ -56,11 +77,27 @@ public class ConnectActivity extends Activity implements RespokeClientDelegate {
 
     public void connect(View view) {
         String endpointID = endpointTextBox.getText().toString();
+        String groupID = groupTextBox.getText().toString();
         String appID = "2b446810-6d92-4fa4-826a-2eabced82d60";
+
+        SharedPreferences settings = this.getApplicationContext().getSharedPreferences(RESPOKE_SETTINGS, 0);
+        SharedPreferences.Editor editor = settings.edit();
+        editor.putString(LAST_USER_KEY, endpointID).apply();
+        editor.putString(LAST_GROUP_KEY, groupID).apply();
 
         ContactManager.sharedInstance().sharedClient = Respoke.sharedInstance().createClient();
         ContactManager.sharedInstance().sharedClient.delegate = this;
-        ContactManager.sharedInstance().sharedClient.connect(endpointID, appID, true, null, this.getApplicationContext());
+        ContactManager.sharedInstance().sharedClient.connect(endpointID, appID, true, null, this.getApplicationContext(), new RespokeTaskCompletionDelegate() {
+            @Override
+            public void onSuccess() {
+                // Do nothing. The onConnect delegate method will be called if successful
+            }
+
+            @Override
+            public void onError(String errorMessage) {
+
+            }
+        });
     }
 
 
@@ -75,7 +112,17 @@ public class ConnectActivity extends Activity implements RespokeClientDelegate {
             groupID = defaultGroupID;
         }
 
-        ContactManager.sharedInstance().sharedClient.joinGroup(groupID);
+        ContactManager.sharedInstance().joinGroup(groupID, new RespokeTaskCompletionDelegate() {
+            @Override
+            public void onSuccess() {
+
+            }
+
+            @Override
+            public void onError(String errorMessage) {
+
+            }
+        });
     }
 
 
