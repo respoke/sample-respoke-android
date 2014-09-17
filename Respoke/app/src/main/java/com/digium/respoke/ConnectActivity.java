@@ -1,6 +1,7 @@
 package com.digium.respoke;
 
 import android.app.Activity;
+import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.text.Editable;
@@ -219,8 +220,8 @@ public class ConnectActivity extends Activity implements RespokeClientDelegate, 
                 runOnUiThread(new Runnable() {
                     @Override
                     public void run() {
-                        progressCircle.setVisibility(View.INVISIBLE);
-                        connectButton.setText("Connect");
+                        Intent i = new Intent(ConnectActivity.this, GroupListActivity.class);
+                        startActivity(i);
                     }
                 });
             }

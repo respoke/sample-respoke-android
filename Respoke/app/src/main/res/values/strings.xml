@@ -7,5 +7,6 @@
     <string name="endpointID">Endpoint ID</string>
     <string name="login_group">Optional Group</string>
     <string name="connect">Connect</string>
+    <string name="title_activity_group_list">GroupListActivity</string>
 
 </resources>
