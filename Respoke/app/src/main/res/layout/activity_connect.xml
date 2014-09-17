@@ -63,16 +63,32 @@
         android:layout_marginTop="5dp"
         android:textSize="15dp"/>
 
-    <Button
-        android:id="@+id/button1"
-        android:layout_width="200dp"
+    <RelativeLayout
+        android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_below="@+id/editText2"
         android:layout_centerHorizontal="true"
-        android:layout_marginTop="30dp"
-        android:onClick="connect"
-        android:background="@drawable/connect_button"
-        android:text="@string/connect"
-        android:textColor="@drawable/connect_button_text"/>
+        android:layout_marginTop="30dp">
+
+        <Button
+            android:id="@+id/button1"
+            android:layout_width="200dp"
+            android:layout_height="wrap_content"
+            android:onClick="connect"
+            android:background="@drawable/connect_button"
+            android:text="@string/connect"
+            android:textColor="@drawable/connect_button_text"/>
+
+        <ProgressBar
+            android:indeterminate="true"
+            android:id="@+id/progress_circle"
+            style="?android:attr/progressBarStyle"
+            android:layout_height="30dp"
+            android:layout_width="wrap_content"
+            android:layout_centerHorizontal="true"
+            android:layout_centerVertical="true"
+            android:visibility="invisible"/>
+
+        </RelativeLayout>
 
 </RelativeLayout>

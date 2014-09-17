@@ -60,6 +60,8 @@ public class ContactManager implements RespokeGroupDelegate, RespokeEndpointDele
             sharedClient.joinGroup(groupName, new RespokeJoinGroupCompletionDelegate() {
                 @Override
                 public void onSuccess(RespokeGroup group) {
+                    Log.d(TAG, "Group joined, fetching member list");
+
                     group.delegate = ContactManager.this;
                     groups.add(group);
 
