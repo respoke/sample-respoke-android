@@ -55,6 +55,9 @@ public class ConnectActivity extends Activity implements RespokeClientDelegate, 
         connectButton = (Button)findViewById(R.id.button1);
         progressCircle = (ProgressBar)findViewById(R.id.progress_circle);
 
+        // Give the Contact manager initial context
+        ContactManager.sharedInstance().context = this.getApplicationContext();
+
         SharedPreferences settings = this.getApplicationContext().getSharedPreferences(RESPOKE_SETTINGS, 0);
         String lastUserID = settings.getString(LAST_USER_KEY, null);
         String lastGroupID = settings.getString(LAST_GROUP_KEY, null);

@@ -1,7 +1,12 @@
 package com.digium.respoke;
 
 import android.app.Activity;
+import android.content.BroadcastReceiver;
+import android.content.Context;
+import android.content.Intent;
+import android.content.IntentFilter;
 import android.os.Bundle;
+import android.support.v4.content.LocalBroadcastManager;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
@@ -20,18 +25,66 @@ import com.digium.respokesdk.RespokeGroup;
 
 public class GroupListActivity extends Activity implements AdapterView.OnItemClickListener {
 
+    private ListDataAdapter listAdapter;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_group_list);
 
-        dataAdapter listAdapter = new dataAdapter();
+        listAdapter = new ListDataAdapter();
 
         ListView lv = (ListView)findViewById(R.id.list); //retrieve the instance of the ListView from your main layout
         lv.setAdapter(listAdapter); //assign the Adapter to be used by the ListView
 
         lv.setOnItemClickListener(this);
     }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+
+        IntentFilter iff = new IntentFilter(ContactManager.ENDPOINT_MESSAGE_RECEIVED);
+        LocalBroadcastManager.getInstance(this).registerReceiver(contactDataChangedReceiver, iff);
+        iff = new IntentFilter(ContactManager.ENDPOINT_PRESENCE_CHANGED);
+        LocalBroadcastManager.getInstance(this).registerReceiver(contactDataChangedReceiver, iff);
+        iff = new IntentFilter(ContactManager.GROUP_MEMBERSHIP_CHANGED);
+        LocalBroadcastManager.getInstance(this).registerReceiver(contactDataInvalidatedReceiver, iff);
+        iff = new IntentFilter(ContactManager.ENDPOINT_DISCOVERED);
+        LocalBroadcastManager.getInstance(this).registerReceiver(contactDataInvalidatedReceiver, iff);
+        iff = new IntentFilter(ContactManager.ENDPOINT_DISAPPEARED);
+        LocalBroadcastManager.getInstance(this).registerReceiver(contactDataInvalidatedReceiver, iff);
+        iff = new IntentFilter(ContactManager.GROUP_MESSAGE_RECEIVED);
+        LocalBroadcastManager.getInstance(this).registerReceiver(contactDataChangedReceiver, iff);
+    }
+
+    @Override
+    protected void onPause() {
+        super.onPause();
+        LocalBroadcastManager.getInstance(this).unregisterReceiver(contactDataChangedReceiver);
+        LocalBroadcastManager.getInstance(this).unregisterReceiver(contactDataInvalidatedReceiver);
+    }
+
+
+    private BroadcastReceiver contactDataChangedReceiver = new BroadcastReceiver() {
+
+        @Override
+        public void onReceive(Context context, Intent intent) {
+            // Tell the ListView to reconfigure itself based on the new data
+            listAdapter.notifyDataSetChanged();
+        }
+    };
+
+
+    private BroadcastReceiver contactDataInvalidatedReceiver = new BroadcastReceiver() {
+
+        @Override
+        public void onReceive(Context context, Intent intent) {
+            // Tell the ListView to reconfigure itself based on the new data
+            listAdapter.notifyDataSetChanged();
+            listAdapter.notifyDataSetInvalidated();
+        }
+    };
 
 
     @Override
@@ -61,11 +114,11 @@ public class GroupListActivity extends Activity implements AdapterView.OnItemCli
     }
 
 
-    public class dataAdapter extends BaseAdapter {
+    public class ListDataAdapter extends BaseAdapter {
 
         private final static String groupHeaderText = "Groups";
         private final static String endpointHeaderText = "All Known Endpoints";
-        
+
 
         @Override
         public int getCount() {
@@ -129,8 +182,8 @@ public class GroupListActivity extends Activity implements AdapterView.OnItemCli
                 if (conversation.unreadCount == 0) {
                     unreadCountText.setVisibility(View.INVISIBLE);
                 } else {
-                    unreadCountText.setText(conversation.unreadCount);
-                    unreadCountText.setVisibility(View.INVISIBLE);
+                    unreadCountText.setText(Integer.toString(conversation.unreadCount));
+                    unreadCountText.setVisibility(View.VISIBLE);
                 }
 
                 return v;
@@ -147,8 +200,8 @@ public class GroupListActivity extends Activity implements AdapterView.OnItemCli
                 if (conversation.unreadCount == 0) {
                     unreadCountText.setVisibility(View.INVISIBLE);
                 } else {
-                    unreadCountText.setText(conversation.unreadCount);
-                    unreadCountText.setVisibility(View.INVISIBLE);
+                    unreadCountText.setText(Integer.toString(conversation.unreadCount));
+                    unreadCountText.setVisibility(View.VISIBLE);
                 }
 
                 return v;

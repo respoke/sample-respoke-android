@@ -1,5 +1,8 @@
 package com.digium.respoke;
 
+import android.content.Context;
+import android.content.Intent;
+import android.support.v4.content.LocalBroadcastManager;
 import android.util.Log;
 
 import com.digium.respokesdk.RespokeClient;
@@ -20,8 +23,18 @@ import java.util.Map;
  * Created by jasonadams on 9/14/14.
  */
 public class ContactManager implements RespokeGroupDelegate, RespokeEndpointDelegate {
+    
+    public static final String ENDPOINT_MESSAGE_RECEIVED = "ENDPOINT_MESSAGE_RECEIVED";
+    public static final String GROUP_MEMBERSHIP_CHANGED = "GROUP_MEMBERSHIP_CHANGED";
+    public static final String ENDPOINT_DISCOVERED = "ENDPOINT_DISCOVERED";
+    public static final String ENDPOINT_DISAPPEARED = "ENDPOINT_DISAPPEARED";
+    public static final String ENDPOINT_JOINED_GROUP = "ENDPOINT_JOINED_GROUP";
+    public static final String ENDPOINT_LEFT_GROUP = "ENDPOINT_LEFT_GROUP";
+    public static final String GROUP_MESSAGE_RECEIVED = "GROUP_MESSAGE_RECEIVED";
+    public static final String ENDPOINT_PRESENCE_CHANGED = "ENDPOINT_PRESENCE_CHANGED";
 
     private final static String TAG = "ContactManager";
+    public Context context;
     public RespokeClient sharedClient;
     public String username;
     public ArrayList<RespokeGroup> groups;
@@ -59,7 +72,7 @@ public class ContactManager implements RespokeGroupDelegate, RespokeEndpointDele
         if (null != sharedClient) {
             sharedClient.joinGroup(groupName, new RespokeJoinGroupCompletionDelegate() {
                 @Override
-                public void onSuccess(RespokeGroup group) {
+                public void onSuccess(final RespokeGroup group) {
                     Log.d(TAG, "Group joined, fetching member list");
 
                     group.delegate = ContactManager.this;
@@ -99,7 +112,10 @@ public class ContactManager implements RespokeGroupDelegate, RespokeEndpointDele
                                 }
                             }
 
-                            //TODO Notify UI
+                            // Notify any UI listeners that group membership has changed
+                            Intent intent = new Intent(GROUP_MEMBERSHIP_CHANGED);
+                            intent.putExtra("groupID", group.getGroupID());
+                            LocalBroadcastManager.getInstance(context).sendBroadcast(intent);
 
                             //TODO register presence
 
@@ -158,7 +174,9 @@ public class ContactManager implements RespokeGroupDelegate, RespokeEndpointDele
                 }
 
                 // Notify any UI listeners that group membership has changed
-                //TODO Notify UI
+                Intent intent = new Intent(GROUP_MEMBERSHIP_CHANGED);
+                intent.putExtra("groupID", group.getGroupID());
+                LocalBroadcastManager.getInstance(context).sendBroadcast(intent);
 
                 completionDelegate.onSuccess();
             }
@@ -209,7 +227,9 @@ public class ContactManager implements RespokeGroupDelegate, RespokeEndpointDele
                 conversations.put(parentEndpoint.endpointID, conversation);
 
                 // Notify any UI listeners that a new endpoint has been discovered
-                //TODO notify UI
+                Intent intent = new Intent(ENDPOINT_DISCOVERED);
+                intent.putExtra("endpointID", parentEndpoint.getEndpointID());
+                LocalBroadcastManager.getInstance(context).sendBroadcast(intent);
 
                 //TODO Register presence
             }
@@ -220,7 +240,12 @@ public class ContactManager implements RespokeGroupDelegate, RespokeEndpointDele
                 groupEndpoints.add(parentEndpoint);
 
                 // Notify any UI listeners that a new endpoint has joined this group
-                //TODO notify UI
+
+                // Notify any UI listeners that group membership has changed
+                Intent intent = new Intent(ENDPOINT_JOINED_GROUP);
+                intent.putExtra("endpointID", parentEndpoint.getEndpointID());
+                intent.putExtra("groupID", sender.getGroupID());
+                LocalBroadcastManager.getInstance(context).sendBroadcast(intent);
             }
 
         }
@@ -268,7 +293,10 @@ public class ContactManager implements RespokeGroupDelegate, RespokeEndpointDele
                             conversations.remove(parentEndpoint.endpointID);
 
                             // Notify any UI listeners that an endpoint has left
-                            //TODO Notify UI
+                            Intent intent = new Intent(ENDPOINT_DISAPPEARED);
+                            intent.putExtra("endpointID", parentEndpoint.getEndpointID());
+                            intent.putExtra("index", endpointIndex);
+                            LocalBroadcastManager.getInstance(context).sendBroadcast(intent);
                         }
                     }
 
@@ -279,7 +307,11 @@ public class ContactManager implements RespokeGroupDelegate, RespokeEndpointDele
                             groupEndpoints.remove(groupIndex);
 
                             // Notify any UI listeners that an endpoint has left this group
-                            //TODO Notify UI
+                            Intent intent = new Intent(ENDPOINT_LEFT_GROUP);
+                            intent.putExtra("endpointID", parentEndpoint.getEndpointID());
+                            intent.putExtra("groupID", sender.getGroupID());
+                            intent.putExtra("index", groupIndex);
+                            LocalBroadcastManager.getInstance(context).sendBroadcast(intent);
                         }
                     }
                 }
@@ -294,7 +326,9 @@ public class ContactManager implements RespokeGroupDelegate, RespokeEndpointDele
         conversation.unreadCount++;
 
         // Notify any UI listeners that a message has been received from a remote endpoint
-        //TODO Notify UI
+        Intent intent = new Intent(GROUP_MESSAGE_RECEIVED);
+        intent.putExtra("groupID", sender.getGroupID());
+        LocalBroadcastManager.getInstance(context).sendBroadcast(intent);
     }
 
 
@@ -307,13 +341,17 @@ public class ContactManager implements RespokeGroupDelegate, RespokeEndpointDele
         conversation.unreadCount++;
 
         // Notify any UI listeners that a message has been received from a remote endpoint
-        //TODO Notify UI
+        Intent intent = new Intent(ENDPOINT_MESSAGE_RECEIVED);
+        intent.putExtra("endpointID", sender.getEndpointID());
+        LocalBroadcastManager.getInstance(context).sendBroadcast(intent);
     }
 
 
     public void onPresence(Object presence, RespokeEndpoint sender) {
         // Notify any UI listeners that presence for this endpoint has been updated
-        //TODO Notify UI
+        Intent intent = new Intent(ENDPOINT_PRESENCE_CHANGED);
+        intent.putExtra("endpointID", sender.getEndpointID());
+        LocalBroadcastManager.getInstance(context).sendBroadcast(intent);
     }
 
 
