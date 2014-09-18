@@ -214,6 +214,8 @@ public class ConnectActivity extends Activity implements RespokeClientDelegate, 
             groupID = defaultGroupID;
         }
 
+        ContactManager.sharedInstance().username = sender.getEndpointID();
+
         ContactManager.sharedInstance().joinGroup(groupID, new RespokeTaskCompletionDelegate() {
             @Override
             public void onSuccess() {

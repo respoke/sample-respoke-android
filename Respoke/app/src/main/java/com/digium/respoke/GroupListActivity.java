@@ -32,6 +32,8 @@ public class GroupListActivity extends Activity implements AdapterView.OnItemCli
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_group_list);
 
+        setTitle(ContactManager.sharedInstance().username);
+
         listAdapter = new ListDataAdapter();
 
         ListView lv = (ListView)findViewById(R.id.list); //retrieve the instance of the ListView from your main layout
