@@ -59,6 +59,9 @@ public class GroupListActivity extends Activity implements AdapterView.OnItemCli
         LocalBroadcastManager.getInstance(this).registerReceiver(contactDataInvalidatedReceiver, iff);
         iff = new IntentFilter(ContactManager.GROUP_MESSAGE_RECEIVED);
         LocalBroadcastManager.getInstance(this).registerReceiver(contactDataChangedReceiver, iff);
+
+        listAdapter.notifyDataSetChanged();
+        listAdapter.notifyDataSetInvalidated();
     }
 
     @Override

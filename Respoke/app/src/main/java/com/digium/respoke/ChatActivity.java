@@ -72,12 +72,14 @@ public class ChatActivity extends Activity {
 
         IntentFilter iff = new IntentFilter(ContactManager.ENDPOINT_MESSAGE_RECEIVED);
         LocalBroadcastManager.getInstance(this).registerReceiver(contactDataInvalidatedReceiver, iff);
+
+        conversation.unreadCount = 0;
     }
 
     @Override
     protected void onPause() {
         super.onPause();
-        
+
         LocalBroadcastManager.getInstance(this).unregisterReceiver(contactDataInvalidatedReceiver);
     }
 
@@ -94,6 +96,7 @@ public class ChatActivity extends Activity {
                     // Tell the ListView to reconfigure itself based on the new data
                     listAdapter.notifyDataSetChanged();
                     listAdapter.notifyDataSetInvalidated();
+                    conversation.unreadCount = 0;
                 }
             }
         }
