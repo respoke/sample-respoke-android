@@ -7,24 +7,32 @@ import android.content.Intent;
 import android.content.IntentFilter;
 import android.os.Bundle;
 import android.support.v4.content.LocalBroadcastManager;
+import android.util.Log;
+import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.BaseAdapter;
+import android.widget.Button;
+import android.widget.EditText;
 import android.widget.ListView;
 import android.widget.TextView;
 
 import com.digium.respokesdk.RespokeEndpoint;
 import com.digium.respokesdk.RespokeGroup;
+import com.digium.respokesdk.RespokeTaskCompletionDelegate;
 
 
 public class ChatActivity extends Activity {
 
+    private final static String TAG = "ChatActivity";
     public Conversation conversation;
     private ListDataAdapter listAdapter;
-    private String remoteEndpointID;
+    private RespokeEndpoint remoteEndpoint;
+    private EditText chatText;
+    private Button buttonSend;
 
 
     @Override
@@ -32,11 +40,33 @@ public class ChatActivity extends Activity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_chat);
 
+        buttonSend = (Button) findViewById(R.id.buttonSend);
+
+        chatText = (EditText) findViewById(R.id.chatText);
+        chatText.setOnKeyListener(new View.OnKeyListener() {
+            public boolean onKey(View v, int keyCode, KeyEvent event) {
+                if ((event.getAction() == KeyEvent.ACTION_DOWN) && (keyCode == KeyEvent.KEYCODE_ENTER)) {
+                    sendChatMessage();
+                    return true;
+                }
+                return false;
+            }
+        });
+        buttonSend.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View arg0) {
+                sendChatMessage();
+            }
+        });
+
         Bundle extras = getIntent().getExtras();
         if (extras != null) {
-            remoteEndpointID = extras.getString("endpointID");
+            String remoteEndpointID = extras.getString("endpointID");
             conversation = ContactManager.sharedInstance().conversations.get(remoteEndpointID);
-            setTitle(remoteEndpointID);
+
+            remoteEndpoint = ContactManager.sharedInstance().sharedClient.getEndpoint(remoteEndpointID, true);
+
+            setTitle(remoteEndpoint.getEndpointID());
 
             listAdapter = new ListDataAdapter();
 
@@ -92,7 +122,7 @@ public class ChatActivity extends Activity {
             if (extras != null) {
                 String endpointID = extras.getString("endpointID");
 
-                if (endpointID.equals(remoteEndpointID)) {
+                if (endpointID.equals(remoteEndpoint.getEndpointID())) {
                     // Tell the ListView to reconfigure itself based on the new data
                     listAdapter.notifyDataSetChanged();
                     listAdapter.notifyDataSetInvalidated();
@@ -101,6 +131,32 @@ public class ChatActivity extends Activity {
             }
         }
     };
+
+
+    private void sendChatMessage(){
+        String message = chatText.getText().toString();
+
+        if (message.length() > 0) {
+            chatText.setText("");
+            conversation.addMessage(message, ContactManager.sharedInstance().username);
+
+            // Tell the ListView to reconfigure itself based on the new data
+            listAdapter.notifyDataSetChanged();
+            listAdapter.notifyDataSetInvalidated();
+
+            remoteEndpoint.sendMessage(message, new RespokeTaskCompletionDelegate() {
+                @Override
+                public void onSuccess() {
+                    Log.d(TAG, "message sent");
+                }
+
+                @Override
+                public void onError(String errorMessage) {
+                    Log.d(TAG, "Error sending message!");
+                }
+            });
+        }
+    }
 
 
     private class ListDataAdapter extends BaseAdapter {
