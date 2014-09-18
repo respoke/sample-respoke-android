@@ -3,4 +3,5 @@
     <color name="respoke_blue">#3b79b4</color>
     <color name="button_bg">#303030</color>
     <color name="list_header_text">#bbbbbb</color>
+    <color name="listview_selection_color">#dddddd</color>
 </resources>
