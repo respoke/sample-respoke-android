@@ -23,6 +23,14 @@
             android:name=".GroupListActivity"
             android:label="@string/title_activity_group_list" >
         </activity>
+        <activity
+            android:name=".ChatActivity"
+            android:label="@string/title_activity_chat"
+            android:parentActivityName=".GroupListActivity" >
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value="com.digium.respoke.GroupListActivity" />
+        </activity>
     </application>
 
 </manifest>

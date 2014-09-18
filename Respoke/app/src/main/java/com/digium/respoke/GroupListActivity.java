@@ -27,6 +27,7 @@ public class GroupListActivity extends Activity implements AdapterView.OnItemCli
 
     private ListDataAdapter listAdapter;
 
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -112,7 +113,13 @@ public class GroupListActivity extends Activity implements AdapterView.OnItemCli
     @Override
     public void onItemClick(AdapterView<?> parent, View view, int position,
                             long id) {
-        Log.d("WAT", "click!");
+        Object item = listAdapter.getItem(position);
+
+        if (item instanceof RespokeEndpoint) {
+            Intent i = new Intent(this, ChatActivity.class);
+            i.putExtra("endpointID", ((RespokeEndpoint) item).getEndpointID());
+            startActivity(i);
+        }
     }
 
 

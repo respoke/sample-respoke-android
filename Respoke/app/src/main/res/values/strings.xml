@@ -8,5 +8,6 @@
     <string name="login_group">Optional Group</string>
     <string name="connect">Connect</string>
     <string name="title_activity_group_list">GroupListActivity</string>
+    <string name="title_activity_chat">ChatActivity</string>
 
 </resources>
