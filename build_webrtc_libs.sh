@@ -3,7 +3,7 @@
 # Set your environment how you want
 PROJECT_ROOT=`pwd`
 DEPOT_TOOLS="$PROJECT_ROOT/depot_tools"
-WEBRTC_ROOT="$PROJECT_ROOT/webrtc"
+WEBRTC_ROOT="$PROJECT_ROOT"
 
 # Utility method for creating a directory
 create_directory_if_not_found() {
@@ -18,8 +18,9 @@ create_directory_if_not_found() {
 
 # Installs all android related dependencies
 install_dependencies() {
-  sudo apt-get -y install wget git gnupg flex bison gperf build-essential zip curl subversion
+  sudo apt-get -y install wget git gnupg flex bison gperf build-essential zip curl subversion libglib2.0-dev libgtk2.0-dev
 }
+
 
 # Installs jdk 1.6
 install_jdk1_6() {
@@ -213,8 +214,8 @@ get_webrtc_revision() {
 
 # Updates webrtc and builds apprtc
 build_apprtc() {
-    pull_depot_tools &&
-    pull_webrtc $1 && 
+    #pull_depot_tools &&
+    #pull_webrtc $1 && 
     prepare_gyp_defines &&
     prepare_build && 
     execute_build
@@ -228,3 +229,7 @@ build_debug_apprtc() {
     prepare_build && 
     execute_debug_build
 }
+
+
+# Run the function specified by the first parameter on the command line
+$@

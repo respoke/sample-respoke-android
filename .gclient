@@ -9,3 +9,4 @@ solutions = [
   },
 ]
 cache_dir = None
+target_os = ['unix', 'android']
