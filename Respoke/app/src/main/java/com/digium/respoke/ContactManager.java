@@ -102,8 +102,8 @@ public class ContactManager implements RespokeGroupDelegate, RespokeEndpointDele
                                     parentEndpoint.delegate = ContactManager.this;
 
                                     // Start tracking the conversation with this endpoint
-                                    Conversation conversation = new Conversation(parentEndpoint.endpointID);
-                                    conversations.put(parentEndpoint.endpointID, conversation);
+                                    Conversation conversation = new Conversation(parentEndpoint.getEndpointID());
+                                    conversations.put(parentEndpoint.getEndpointID(), conversation);
                                 }
 
                                 // If this endpoint is not known in this specific group, remember it
@@ -218,13 +218,13 @@ public class ContactManager implements RespokeGroupDelegate, RespokeEndpointDele
 
             // If this endpoint is not known anywhere, remember it
             if (-1 == allKnownEndpoints.indexOf(parentEndpoint)) {
-                Log.d(TAG, "Joined: " + parentEndpoint.endpointID);
+                Log.d(TAG, "Joined: " + parentEndpoint.getEndpointID());
                 allKnownEndpoints.add(parentEndpoint);
                 parentEndpoint.delegate = this;
 
                 // Start tracking the conversation with this endpoint
-                Conversation conversation = new Conversation(parentEndpoint.endpointID);
-                conversations.put(parentEndpoint.endpointID, conversation);
+                Conversation conversation = new Conversation(parentEndpoint.getEndpointID());
+                conversations.put(parentEndpoint.getEndpointID(), conversation);
 
                 // Notify any UI listeners that a new endpoint has been discovered
                 Intent intent = new Intent(ENDPOINT_DISCOVERED);
@@ -285,12 +285,12 @@ public class ContactManager implements RespokeGroupDelegate, RespokeEndpointDele
                     }
 
                     if (connectionCount == 0) {
-                        Log.d(TAG, "Left: " + parentEndpoint.endpointID);
+                        Log.d(TAG, "Left: " + parentEndpoint.getEndpointID());
                         int endpointIndex = allKnownEndpoints.indexOf(parentEndpoint);
 
                         if (-1 != endpointIndex) {
                             allKnownEndpoints.remove(endpointIndex);
-                            conversations.remove(parentEndpoint.endpointID);
+                            conversations.remove(parentEndpoint.getEndpointID());
 
                             // Notify any UI listeners that an endpoint has left
                             Intent intent = new Intent(ENDPOINT_DISAPPEARED);
@@ -322,7 +322,7 @@ public class ContactManager implements RespokeGroupDelegate, RespokeEndpointDele
 
     public void onGroupMessage(String message, RespokeEndpoint endpoint, RespokeGroup sender) {
         Conversation conversation = groupConversations.get(sender.getGroupID());
-        conversation.addMessage(message, endpoint.endpointID);
+        conversation.addMessage(message, endpoint.getEndpointID());
         conversation.unreadCount++;
 
         // Notify any UI listeners that a message has been received from a remote endpoint
@@ -336,8 +336,8 @@ public class ContactManager implements RespokeGroupDelegate, RespokeEndpointDele
 
 
     public void onMessage(String message, RespokeEndpoint sender) {
-        Conversation conversation = conversations.get(sender.endpointID);
-        conversation.addMessage(message, sender.endpointID);
+        Conversation conversation = conversations.get(sender.getEndpointID());
+        conversation.addMessage(message, sender.getEndpointID());
         conversation.unreadCount++;
 
         // Notify any UI listeners that a message has been received from a remote endpoint
