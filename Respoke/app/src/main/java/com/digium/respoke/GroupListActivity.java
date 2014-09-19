@@ -19,13 +19,21 @@ import android.widget.BaseAdapter;
 import android.widget.ListView;
 import android.widget.TextView;
 
+import com.digium.respokesdk.RespokeCall;
+import com.digium.respokesdk.RespokeClient;
+import com.digium.respokesdk.RespokeClientDelegate;
 import com.digium.respokesdk.RespokeEndpoint;
 import com.digium.respokesdk.RespokeGroup;
+import com.digium.respokesdk.RespokeTaskCompletionDelegate;
+
+import java.util.ArrayList;
 
 
-public class GroupListActivity extends Activity implements AdapterView.OnItemClickListener {
+public class GroupListActivity extends Activity implements AdapterView.OnItemClickListener, RespokeClientDelegate {
 
+    private final static String TAG = "GroupListActivity";
     private ListDataAdapter listAdapter;
+    private ArrayList<String> groupsToJoin;
 
 
     @Override
@@ -41,6 +49,8 @@ public class GroupListActivity extends Activity implements AdapterView.OnItemCli
         lv.setAdapter(listAdapter); //assign the Adapter to be used by the ListView
 
         lv.setOnItemClickListener(this);
+
+        ContactManager.sharedInstance().sharedClient.delegate = this;
     }
 
     @Override
@@ -110,6 +120,50 @@ public class GroupListActivity extends Activity implements AdapterView.OnItemCli
             return true;
         }
         return super.onOptionsItemSelected(item);
+    }
+
+
+    @Override
+    public void onBackPressed()
+    {
+        boolean notConnected = !ContactManager.sharedInstance().sharedClient.isConnected();
+
+        // send a disconnect either way to let the client clean itself up
+        ContactManager.sharedInstance().sharedClient.disconnect();
+
+        if (notConnected) {
+            // Switch views immediately, since there will be no callback function
+            returnToConnectActivity();
+        }
+    }
+
+
+    public void returnToConnectActivity() {
+        // send a disconnect either way to let the client clean itself up
+        ContactManager.sharedInstance().disconnected();
+        this.finish();
+    }
+
+
+    public void rejoinGroups() {
+        String nextGroupID = groupsToJoin.get(0);
+        groupsToJoin.remove(0);
+
+        ContactManager.sharedInstance().joinGroup(nextGroupID, new RespokeTaskCompletionDelegate() {
+            @Override
+            public void onSuccess() {
+                if (groupsToJoin.size() > 0) {
+                    rejoinGroups();
+                } else {
+                    groupsToJoin = null;
+                }
+            }
+
+            @Override
+            public void onError(String errorMessage) {
+                Log.d(TAG, "Error rejoining group: " + errorMessage);
+            }
+        });
     }
 
 
@@ -220,4 +274,65 @@ public class GroupListActivity extends Activity implements AdapterView.OnItemCli
             }
         }
     }
+
+
+    // RespokeClientDelegate methods
+
+
+    public void onConnect(RespokeClient sender) {
+        //todo presence ui changes
+
+        if (null != groupsToJoin) {
+            rejoinGroups();
+        }
+    }
+
+
+    public void onDisconnect(RespokeClient sender, boolean reconnecting) {
+        if (reconnecting) {
+            if (ContactManager.sharedInstance().groups.size() > 0) {
+                groupsToJoin = new ArrayList<String>();
+
+                for (RespokeGroup eachGroup : ContactManager.sharedInstance().groups) {
+                    groupsToJoin.add(eachGroup.getGroupID());
+                }
+            }
+
+            ContactManager.sharedInstance().disconnected();
+
+            //todo presence ui changes
+
+            // Update UI on main thread
+            runOnUiThread(new Runnable() {
+                @Override
+                public void run() {
+                    // Tell the ListView to reconfigure itself based on the new data
+                    listAdapter.notifyDataSetChanged();
+                    listAdapter.notifyDataSetInvalidated();
+                }
+            });
+
+            //todo pop to this activity?
+        } else {
+            // Update UI on main thread
+            runOnUiThread(new Runnable() {
+                @Override
+                public void run() {
+                    returnToConnectActivity();
+                }
+            });
+        }
+    }
+
+
+    public void onError(RespokeClient sender, String errorMessage) {
+        Log.d(TAG, "RespokeSDK Error: " + errorMessage);
+    }
+
+
+    public void onCall(RespokeClient sender, RespokeCall call) {
+        //TODO
+    }
+
+
 }

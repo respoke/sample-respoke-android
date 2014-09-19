@@ -227,6 +227,10 @@ public class ConnectActivity extends Activity implements RespokeClientDelegate, 
                     public void run() {
                         Intent i = new Intent(ConnectActivity.this, GroupListActivity.class);
                         startActivity(i);
+
+                        progressCircle.setVisibility(View.INVISIBLE);
+                        errorMessageView.setText("");
+                        connectButton.setText("Connect");
                     }
                 });
             }
