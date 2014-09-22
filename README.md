@@ -1,6 +1,14 @@
 respoke-android
 ===============
 
+Prerequisites:
+
+Android Studio (I used v0.8.9)
+Android NDK (I used r10b, Mac 64-bit)
+
+https://developer.android.com/tools/sdk/ndk/index.html
+
+
 
 
 Building the WebRTC libaries
