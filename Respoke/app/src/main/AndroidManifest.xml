@@ -31,6 +31,12 @@
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value="com.digium.respoke.GroupListActivity" />
         </activity>
+        <activity
+            android:name=".CallActivity"
+            android:configChanges="orientation|keyboardHidden|screenSize"
+            android:label="@string/title_activity_call"
+            android:theme="@style/FullscreenTheme" >
+        </activity>
     </application>
 
 </manifest>

@@ -1,8 +1,11 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
+
     <color name="respoke_blue">#3b79b4</color>
     <color name="button_bg">#303030</color>
     <color name="list_header_text">#bbbbbb</color>
     <color name="listview_selection_color">#dddddd</color>
     <color name="remote_message_color">#cccccc</color>
+    <color name="black_overlay">#66000000</color>
+
 </resources>

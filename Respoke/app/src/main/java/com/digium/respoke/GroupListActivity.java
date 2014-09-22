@@ -116,7 +116,8 @@ public class GroupListActivity extends Activity implements AdapterView.OnItemCli
         // automatically handle clicks on the Home/Up button, so long
         // as you specify a parent activity in AndroidManifest.xml.
         int id = item.getItemId();
-        if (id == R.id.action_settings) {
+        if (id == R.id.action_join) {
+            Log.d(TAG, "Hi!");
             return true;
         }
         return super.onOptionsItemSelected(item);
