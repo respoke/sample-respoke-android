@@ -40,9 +40,8 @@
         </activity>
         <activity
             android:name=".CallActivity"
-            android:configChanges="orientation|keyboardHidden|screenSize"
             android:label="@string/title_activity_call"
-            android:theme="@style/FullscreenTheme" >
+            android:theme="@android:style/android:Theme.Holo.Light.NoActionBar" >
         </activity>
     </application>
 

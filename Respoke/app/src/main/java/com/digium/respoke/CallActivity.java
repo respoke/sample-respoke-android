@@ -18,6 +18,7 @@ import android.os.Handler;
 import android.util.Log;
 import android.view.MotionEvent;
 import android.view.View;
+import android.widget.ImageButton;
 
 import org.webrtc.PeerConnectionFactory;
 
@@ -37,35 +38,9 @@ public class CallActivity extends Activity implements RespokeCallDelegate {
     private CallVideoView videoView;
     private boolean audioMuted;
     private boolean videoMuted;
+    private ImageButton muteAudioButton;
+    private ImageButton muteVideoButton;
 
-
-    /**
-     * Whether or not the system UI should be auto-hidden after
-     * {@link #AUTO_HIDE_DELAY_MILLIS} milliseconds.
-     */
-    private static final boolean AUTO_HIDE = true;
-
-    /**
-     * If {@link #AUTO_HIDE} is set, the number of milliseconds to wait after
-     * user interaction before hiding the system UI.
-     */
-    private static final int AUTO_HIDE_DELAY_MILLIS = 3000;
-
-    /**
-     * If set, will toggle the system UI visibility upon interaction. Otherwise,
-     * will show the system UI visibility upon interaction.
-     */
-    private static final boolean TOGGLE_ON_CLICK = true;
-
-    /**
-     * The flags to pass to {@link SystemUiHider#getInstance}.
-     */
-    private static final int HIDER_FLAGS = SystemUiHider.FLAG_HIDE_NAVIGATION;
-
-    /**
-     * The instance of the {@link SystemUiHider} for this activity.
-     */
-    private SystemUiHider mSystemUiHider;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -73,14 +48,14 @@ public class CallActivity extends Activity implements RespokeCallDelegate {
 
         setContentView(R.layout.activity_call);
 
-        final View controlsView = findViewById(R.id.fullscreen_content_controls);
-        //final View contentView = findViewById(R.id.fullscreen_content);
         videoView = (CallVideoView) findViewById(R.id.videoview);
+        muteAudioButton = (ImageButton) findViewById(R.id.mute_audio_button);
+        muteVideoButton = (ImageButton) findViewById(R.id.mute_video_button);
 
-        Point displaySize = new Point();
+        /*Point displaySize = new Point();
         getWindowManager().getDefaultDisplay().getRealSize(displaySize);
 
-        videoView.updateDisplaySize(displaySize);
+        videoView.updateDisplaySize(displaySize);*/
 
         Bundle extras = getIntent().getExtras();
         if (extras != null) {
@@ -103,65 +78,6 @@ public class CallActivity extends Activity implements RespokeCallDelegate {
         }
 
         this.setTitle("Call With " + remoteEndpoint.getEndpointID());
-
-        // Set up an instance of SystemUiHider to control the system UI for
-        // this activity.
-        /*mSystemUiHider = SystemUiHider.getInstance(this, videoView, HIDER_FLAGS);
-        mSystemUiHider.setup();
-        mSystemUiHider
-                .setOnVisibilityChangeListener(new SystemUiHider.OnVisibilityChangeListener() {
-                    // Cached values.
-                    int mControlsHeight;
-                    int mShortAnimTime;
-
-                    @Override
-                    @TargetApi(Build.VERSION_CODES.HONEYCOMB_MR2)
-                    public void onVisibilityChange(boolean visible) {
-                        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB_MR2) {
-                            // If the ViewPropertyAnimator API is available
-                            // (Honeycomb MR2 and later), use it to animate the
-                            // in-layout UI controls at the bottom of the
-                            // screen.
-                            if (mControlsHeight == 0) {
-                                mControlsHeight = controlsView.getHeight();
-                            }
-                            if (mShortAnimTime == 0) {
-                                mShortAnimTime = getResources().getInteger(
-                                        android.R.integer.config_shortAnimTime);
-                            }
-                            controlsView.animate()
-                                    .translationY(visible ? 0 : mControlsHeight)
-                                    .setDuration(mShortAnimTime);
-                        } else {
-                            // If the ViewPropertyAnimator APIs aren't
-                            // available, simply show or hide the in-layout UI
-                            // controls.
-                            controlsView.setVisibility(visible ? View.VISIBLE : View.GONE);
-                        }
-
-                        if (visible && AUTO_HIDE) {
-                            // Schedule a hide().
-                            delayedHide(AUTO_HIDE_DELAY_MILLIS);
-                        }
-                    }
-                });
-
-        // Set up the user interaction to manually show or hide the system UI.
-        videoView.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                if (TOGGLE_ON_CLICK) {
-                    mSystemUiHider.toggle();
-                } else {
-                    mSystemUiHider.show();
-                }
-            }
-        });*/
-
-        // Upon interacting with UI controls, delay any scheduled hide()
-        // operations to prevent the jarring behavior of controls going away
-        // while interacting with the UI.
-        //findViewById(R.id.dummy_button).setOnTouchListener(mDelayHideTouchListener);
     }
 
     @Override
@@ -197,49 +113,18 @@ public class CallActivity extends Activity implements RespokeCallDelegate {
     }
 
 
-    @Override
+    /*@Override
     public void onConfigurationChanged (Configuration newConfig) {
         Point displaySize = new Point();
         getWindowManager().getDefaultDisplay().getSize(displaySize);
         videoView.updateDisplaySize(displaySize);
+        Log.d(TAG, "configurationChanged: " + displaySize.x + " " + displaySize.y);
         super.onConfigurationChanged(newConfig);
-    }
-
-
-    /**
-     * Touch listener to use for in-layout UI controls to delay hiding the
-     * system UI. This is to prevent the jarring behavior of controls going away
-     * while interacting with activity UI.
-     */
-    /*View.OnTouchListener mDelayHideTouchListener = new View.OnTouchListener() {
-        @Override
-        public boolean onTouch(View view, MotionEvent motionEvent) {
-            if (AUTO_HIDE) {
-                delayedHide(AUTO_HIDE_DELAY_MILLIS);
-            }
-            return false;
-        }
-    };
-
-    Handler mHideHandler = new Handler();
-    Runnable mHideRunnable = new Runnable() {
-        @Override
-        public void run() {
-            mSystemUiHider.hide();
-        }
-    };*/
-
-    /**
-     * Schedules a call to hide() in [delay] milliseconds, canceling any
-     * previously scheduled calls.
-     */
-    /*private void delayedHide(int delayMillis) {
-        mHideHandler.removeCallbacks(mHideRunnable);
-        mHideHandler.postDelayed(mHideRunnable, delayMillis);
     }*/
 
 
     public void hangup(View view) {
+        videoView.onPause();
         call.hangup(true);
         finish();
     }
@@ -248,12 +133,32 @@ public class CallActivity extends Activity implements RespokeCallDelegate {
     public void muteAudio(View view) {
         audioMuted = !audioMuted;
         call.muteAudio(audioMuted);
+
+        if (audioMuted) {
+            muteAudioButton.setImageResource(R.drawable.unmute_audio);
+            muteAudioButton.setSelected(true);
+            muteAudioButton.invalidate();
+        } else {
+            muteAudioButton.setImageResource(R.drawable.mute_audio);
+            muteAudioButton.setSelected(false);
+            muteAudioButton.invalidate();
+        }
     }
 
 
     public void muteVideo(View view) {
         videoMuted = !videoMuted;
         call.muteVideo(videoMuted);
+
+        if (videoMuted) {
+            muteVideoButton.setImageResource(R.drawable.unmute_video);
+            muteVideoButton.setSelected(true);
+            muteVideoButton.invalidate();
+        } else {
+            muteVideoButton.setImageResource(R.drawable.mute_video);
+            muteVideoButton.setSelected(false);
+            muteVideoButton.invalidate();
+        }
     }
 
 

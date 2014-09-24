@@ -29,37 +29,43 @@
         android:fitsSystemWindows="true">
 
         <LinearLayout android:id="@+id/fullscreen_content_controls"
-            style="?metaButtonBarStyle"
-            android:layout_width="match_parent"
+            android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_gravity="bottom|center_horizontal"
-            android:background="@color/black_overlay"
+            android:layout_marginBottom="10dp"
             android:orientation="horizontal"
             tools:ignore="UselessParent">
 
-            <Button android:id="@+id/mute_video_button"
-                style="?metaButtonBarButtonStyle"
-                android:layout_width="0dp"
+            <ImageButton android:id="@+id/mute_video_button"
+                android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
+                android:padding="10dp"
                 android:onClick="muteVideo"
-                android:text="Mute Video" />
+                android:background="@drawable/mute_button"
+                android:src="@drawable/mute_video" />
 
             <Button android:id="@+id/hangup_button"
-                style="?metaButtonBarButtonStyle"
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
+                android:layout_width="69dp"
+                android:layout_height="69dp"
                 android:layout_weight="1"
+                android:layout_marginRight="20dp"
+                android:layout_marginLeft="20dp"
+                android:padding="10dp"
                 android:onClick="hangup"
-                android:text="Hangup" />
+                android:text="End"
+                android:textSize="28dp"
+                android:background="@drawable/hangup_button"
+                android:textColor="@android:color/white" />
 
-            <Button android:id="@+id/mute_audio_button"
-                style="?metaButtonBarButtonStyle"
-                android:layout_width="0dp"
+            <ImageButton android:id="@+id/mute_audio_button"
+                android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
+                android:padding="10dp"
                 android:onClick="muteAudio"
-                android:text="Mute Audio" />
+                android:background="@drawable/mute_button"
+                android:src="@drawable/mute_audio" />
 
         </LinearLayout>
     </FrameLayout>
