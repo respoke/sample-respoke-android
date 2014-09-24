@@ -332,7 +332,10 @@ public class GroupListActivity extends Activity implements AdapterView.OnItemCli
 
 
     public void onCall(RespokeClient sender, RespokeCall call) {
-        //TODO
+        Intent i = new Intent(this, CallActivity.class);
+        i.putExtra("callID", call.getSessionID());
+        i.putExtra("audioOnly", call.audioOnly);
+        startActivity(i);
     }
 
 

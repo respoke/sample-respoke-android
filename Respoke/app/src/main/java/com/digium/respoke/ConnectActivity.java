@@ -165,7 +165,7 @@ public class ConnectActivity extends Activity implements RespokeClientDelegate, 
 
                 isConnecting = true;
 
-                ContactManager.sharedInstance().sharedClient = Respoke.sharedInstance().createClient();
+                ContactManager.sharedInstance().sharedClient = Respoke.sharedInstance().createClient(this);
                 ContactManager.sharedInstance().sharedClient.delegate = this;
                 ContactManager.sharedInstance().sharedClient.connect(endpointID, appID, true, null, this.getApplicationContext(), new RespokeTaskCompletionDelegate() {
                     @Override
