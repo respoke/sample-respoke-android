@@ -183,6 +183,15 @@ public class CallActivity extends Activity implements RespokeCallDelegate {
         call.resume();
     }
 
+
+    @Override
+    public void onBackPressed()
+    {
+        call.hangup(true);
+        super.onBackPressed();
+    }
+
+
     @Override
     public void onConfigurationChanged (Configuration newConfig) {
         Point displaySize = new Point();
