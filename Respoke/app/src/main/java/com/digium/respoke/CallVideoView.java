@@ -48,15 +48,35 @@ public class CallVideoView extends GLSurfaceView {
         super(context, attrs);
     }
 
-  public void updateDisplaySize(Point screenDimensions) {
-    this.screenDimensions = screenDimensions;
-  }
+    public void updateDisplaySize(Point screenDimensions) {
+        this.screenDimensions = screenDimensions;
+    }
 
-  @Override
+
+    @Override
+    protected void onMeasure(int widthMeasureSpec, int heightMeasureSpec) {
+        super.onMeasure(widthMeasureSpec, heightMeasureSpec);
+
+        int size = 0;
+        int width = getMeasuredWidth();
+        int height = getMeasuredHeight();
+        int widthWithoutPadding = width - getPaddingLeft() - getPaddingRight();
+        int heightWithoutPadding = height - getPaddingTop() - getPaddingBottom();
+
+        // set the dimensions
+        if (widthWithoutPadding > heightWithoutPadding) {
+            size = heightWithoutPadding;
+        } else {
+            size = widthWithoutPadding;
+        }
+
+        setMeasuredDimension(size + getPaddingLeft() + getPaddingRight(), size + getPaddingTop() + getPaddingBottom());
+    }
+/*  @Override
   protected void onMeasure(int unusedX, int unusedY) {
     // Go big or go home!
     setMeasuredDimension(screenDimensions.x, screenDimensions.y);
-  }
+  }*/
 /*
   @Override
   protected void onAttachedToWindow() {
