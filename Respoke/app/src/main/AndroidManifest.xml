@@ -41,6 +41,7 @@
         <activity
             android:name=".CallActivity"
             android:label="@string/title_activity_call"
+            android:screenOrientation="portrait"
             android:theme="@android:style/android:Theme.Holo.Light.NoActionBar" >
         </activity>
     </application>
