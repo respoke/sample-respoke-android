@@ -1,7 +1,8 @@
 <menu xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     tools:context="com.digium.respoke.GroupListActivity" >
-    <item android:id="@+id/action_join"
+    <!-- <item android:id="@+id/action_join"
         android:title="@string/action_join"
         android:showAsAction="ifRoom" />
+        -->
 </menu>
