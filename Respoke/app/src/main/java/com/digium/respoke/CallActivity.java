@@ -202,7 +202,12 @@ public class CallActivity extends Activity implements RespokeCallDelegate {
 
 
     public void onHangup(RespokeCall sender) {
-        finish();
+        runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                finish();
+            }
+        });
     }
 
 
