@@ -35,6 +35,9 @@ public class CallActivity extends Activity implements RespokeCallDelegate {
     private RespokeCall call;
     private RespokeEndpoint remoteEndpoint;
     private CallVideoView videoView;
+    private boolean audioMuted;
+    private boolean videoMuted;
+
 
     /**
      * Whether or not the system UI should be auto-hidden after
@@ -98,6 +101,8 @@ public class CallActivity extends Activity implements RespokeCallDelegate {
                 call.answer(this, this, videoView);
             }
         }
+
+        this.setTitle("Call With " + remoteEndpoint.getEndpointID());
 
         // Set up an instance of SystemUiHider to control the system UI for
         // this activity.
@@ -232,6 +237,24 @@ public class CallActivity extends Activity implements RespokeCallDelegate {
         mHideHandler.removeCallbacks(mHideRunnable);
         mHideHandler.postDelayed(mHideRunnable, delayMillis);
     }*/
+
+
+    public void hangup(View view) {
+        call.hangup(true);
+        finish();
+    }
+
+
+    public void muteAudio(View view) {
+        audioMuted = !audioMuted;
+        call.muteAudio(audioMuted);
+    }
+
+
+    public void muteVideo(View view) {
+        videoMuted = !videoMuted;
+        call.muteVideo(videoMuted);
+    }
 
 
     public void onError(final String errorMessage, RespokeCall sender) {
