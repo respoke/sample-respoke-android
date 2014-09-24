@@ -19,6 +19,8 @@ import android.util.Log;
 import android.view.MotionEvent;
 import android.view.View;
 import android.widget.ImageButton;
+import android.widget.ProgressBar;
+import android.widget.TextView;
 
 import org.webrtc.PeerConnectionFactory;
 
@@ -40,6 +42,8 @@ public class CallActivity extends Activity implements RespokeCallDelegate {
     private boolean videoMuted;
     private ImageButton muteAudioButton;
     private ImageButton muteVideoButton;
+    private TextView connectingTextView;
+    private ProgressBar progressCircle;
 
 
     @Override
@@ -51,6 +55,8 @@ public class CallActivity extends Activity implements RespokeCallDelegate {
         videoView = (CallVideoView) findViewById(R.id.videoview);
         muteAudioButton = (ImageButton) findViewById(R.id.mute_audio_button);
         muteVideoButton = (ImageButton) findViewById(R.id.mute_video_button);
+        connectingTextView = (TextView) findViewById(R.id.connecting_text_view);
+        progressCircle = (ProgressBar) findViewById(R.id.progress_circle);
 
         /*Point displaySize = new Point();
         getWindowManager().getDefaultDisplay().getRealSize(displaySize);
@@ -106,8 +112,7 @@ public class CallActivity extends Activity implements RespokeCallDelegate {
 
 
     @Override
-    public void onBackPressed()
-    {
+    public void onBackPressed() {
         call.hangup(true);
         super.onBackPressed();
     }
@@ -165,7 +170,7 @@ public class CallActivity extends Activity implements RespokeCallDelegate {
     public void onError(final String errorMessage, RespokeCall sender) {
         Log.d(TAG, errorMessage);
         // Update UI on main thread
-        runOnUiThread(new Runnable() {
+        /*runOnUiThread(new Runnable() {
             @Override
             public void run() {
                 AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(
@@ -192,7 +197,7 @@ public class CallActivity extends Activity implements RespokeCallDelegate {
                 // show it
                 alertDialog.show();
             }
-        });
+        });*/
     }
 
 
@@ -202,6 +207,14 @@ public class CallActivity extends Activity implements RespokeCallDelegate {
 
 
     public void onConnected(RespokeCall sender) {
-
+        runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                connectingTextView.setVisibility(View.INVISIBLE);
+                progressCircle.setVisibility(View.INVISIBLE);
+            }
+        });
     }
+
+
 }

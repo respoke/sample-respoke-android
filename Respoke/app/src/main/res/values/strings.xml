@@ -7,7 +7,9 @@
     <string name="endpointID">Endpoint ID</string>
     <string name="login_group">Optional Group</string>
     <string name="connect">Connect</string>
+    <string name="connecting">Connecting...</string>
     <string name="message">Message</string>
+    <string name="end_call">End</string>
     <string name="title_activity_group_list">GroupListActivity</string>
     <string name="title_activity_chat">ChatActivity</string>
     <string name="action_call">Call</string>

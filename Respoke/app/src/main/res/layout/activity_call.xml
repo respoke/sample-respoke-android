@@ -5,10 +5,6 @@
     android:background="#000000"
     tools:context="com.digium.respoke.CallActivity">
 
-    <!-- The primary full-screen view. This can be replaced with whatever view
-         is needed to present your content, e.g. VideoView, SurfaceView,
-         TextureView, etc. -->
-
     <RelativeLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent">
@@ -22,11 +18,31 @@
 
     </RelativeLayout>
 
-    <!-- This FrameLayout insets its children based on system windows using
-         android:fitsSystemWindows. -->
     <FrameLayout android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:fitsSystemWindows="true">
+
+        <LinearLayout android:id="@+id/connecting_view"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_horizontal|center_vertical">
+
+            <TextView
+                android:id="@+id/connecting_text_view"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/connecting"
+                android:textColor="@android:color/white"
+                android:textSize="22sp"/>
+
+            <ProgressBar
+                android:indeterminate="true"
+                android:id="@+id/progress_circle"
+                style="?android:attr/progressBarStyle"
+                android:layout_height="25dp"
+                android:layout_width="wrap_content"
+                android:visibility="visible"/>
+            </LinearLayout>
 
         <LinearLayout android:id="@+id/fullscreen_content_controls"
             android:layout_width="wrap_content"
@@ -53,8 +69,8 @@
                 android:layout_marginLeft="20dp"
                 android:padding="10dp"
                 android:onClick="hangup"
-                android:text="End"
-                android:textSize="28dp"
+                android:text="@string/end_call"
+                android:textSize="28sp"
                 android:background="@drawable/hangup_button"
                 android:textColor="@android:color/white" />
 
