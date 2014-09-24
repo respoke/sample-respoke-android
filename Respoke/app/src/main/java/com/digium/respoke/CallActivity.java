@@ -69,6 +69,10 @@ public class CallActivity extends Activity implements RespokeCallDelegate {
             String callID = extras.getString("callID");
             audioOnly = extras.getBoolean("audioOnly");
 
+            if (audioOnly) {
+                muteVideoButton.setVisibility(View.INVISIBLE);
+            }
+
             if (null != callID) {
                 call = ContactManager.sharedInstance().sharedClient.callWithID(callID);
             }
@@ -86,15 +90,6 @@ public class CallActivity extends Activity implements RespokeCallDelegate {
         this.setTitle("Call With " + remoteEndpoint.getEndpointID());
     }
 
-    @Override
-    protected void onPostCreate(Bundle savedInstanceState) {
-        super.onPostCreate(savedInstanceState);
-
-        // Trigger the initial hide() shortly after the activity has been
-        // created, to briefly hint to the user that UI controls
-        // are available.
-        //delayedHide(100);
-    }
 
     @Override
     public void onPause() {
