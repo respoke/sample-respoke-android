@@ -63,31 +63,57 @@ public class CallActivity extends Activity implements RespokeCallDelegate {
 
         videoView.updateDisplaySize(displaySize);*/
 
-        Bundle extras = getIntent().getExtras();
-        if (extras != null) {
-            String remoteEndpointID = extras.getString("endpointID");
-            String callID = extras.getString("callID");
-            audioOnly = extras.getBoolean("audioOnly");
+        String remoteEndpointID = null;
+        String callID = null;
 
-            if (audioOnly) {
-                muteVideoButton.setVisibility(View.INVISIBLE);
-            }
-
-            if (null != callID) {
-                call = ContactManager.sharedInstance().sharedClient.callWithID(callID);
-            }
+        // Check whether we're recreating a previously destroyed instance
+        if (savedInstanceState != null) {
+            remoteEndpointID = savedInstanceState.getString("endpointID");
+            callID = savedInstanceState.getString("endpointID");
+            audioOnly = savedInstanceState.getBoolean("audioOnly");
 
             remoteEndpoint = ContactManager.sharedInstance().sharedClient.getEndpoint(remoteEndpointID, true);
+            call = ContactManager.sharedInstance().sharedClient.callWithID(callID);
 
-            if (null == call) {
-                call = remoteEndpoint.startCall(this, this, videoView, audioOnly);
-            } else {
-                remoteEndpoint = call.endpoint;
-                call.answer(this, this, videoView);
+            //todo: tell the call about the new video view
+        } else {
+            Bundle extras = getIntent().getExtras();
+            if (extras != null) {
+                remoteEndpointID = extras.getString("endpointID");
+                callID = extras.getString("callID");
+                audioOnly = extras.getBoolean("audioOnly");
+
+                if (null != callID) {
+                    call = ContactManager.sharedInstance().sharedClient.callWithID(callID);
+                }
+
+                remoteEndpoint = ContactManager.sharedInstance().sharedClient.getEndpoint(remoteEndpointID, true);
+
+                if (null == call) {
+                    call = remoteEndpoint.startCall(this, this, videoView, audioOnly);
+                } else {
+                    remoteEndpoint = call.endpoint;
+                    call.answer(this, this, videoView);
+                }
             }
         }
 
+        if (audioOnly) {
+            muteVideoButton.setVisibility(View.INVISIBLE);
+        }
+
         this.setTitle("Call With " + remoteEndpoint.getEndpointID());
+    }
+
+
+    @Override
+    public void onSaveInstanceState(Bundle savedInstanceState) {
+        savedInstanceState.putString("endpointID", remoteEndpoint.getEndpointID());
+        savedInstanceState.putString("callID", call.getSessionID());
+        savedInstanceState.putBoolean("audioOnly", audioOnly);
+
+        // Always call the superclass so it can save the view hierarchy state
+        super.onSaveInstanceState(savedInstanceState);
     }
 
 

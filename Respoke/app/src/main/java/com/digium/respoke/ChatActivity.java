@@ -64,20 +64,35 @@ public class ChatActivity extends FragmentActivity {
             }
         });
 
-        Bundle extras = getIntent().getExtras();
-        if (extras != null) {
-            String remoteEndpointID = extras.getString("endpointID");
-            conversation = ContactManager.sharedInstance().conversations.get(remoteEndpointID);
+        String remoteEndpointID = null;
 
-            remoteEndpoint = ContactManager.sharedInstance().sharedClient.getEndpoint(remoteEndpointID, true);
-
-            setTitle(remoteEndpoint.getEndpointID());
-
-            listAdapter = new ListDataAdapter();
-
-            ListView lv = (ListView)findViewById(R.id.list); //retrieve the instance of the ListView from your main layout
-            lv.setAdapter(listAdapter); //assign the Adapter to be used by the ListView
+        // Check whether we're recreating a previously destroyed instance
+        if (savedInstanceState != null) {
+            remoteEndpointID = savedInstanceState.getString("endpointID");
+        } else {
+            Bundle extras = getIntent().getExtras();
+            if (extras != null) {
+                remoteEndpointID = extras.getString("endpointID");
+            }
         }
+
+        conversation = ContactManager.sharedInstance().conversations.get(remoteEndpointID);
+        remoteEndpoint = ContactManager.sharedInstance().sharedClient.getEndpoint(remoteEndpointID, true);
+        setTitle(remoteEndpoint.getEndpointID());
+
+        listAdapter = new ListDataAdapter();
+
+        ListView lv = (ListView) findViewById(R.id.list); //retrieve the instance of the ListView from your main layout
+        lv.setAdapter(listAdapter); //assign the Adapter to be used by the ListView
+    }
+
+
+    @Override
+    public void onSaveInstanceState(Bundle savedInstanceState) {
+        savedInstanceState.putString("endpointID", remoteEndpoint.getEndpointID());
+
+        // Always call the superclass so it can save the view hierarchy state
+        super.onSaveInstanceState(savedInstanceState);
     }
 
 
