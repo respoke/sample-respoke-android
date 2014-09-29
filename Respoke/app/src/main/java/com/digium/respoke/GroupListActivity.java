@@ -19,17 +19,16 @@ import android.widget.BaseAdapter;
 import android.widget.ListView;
 import android.widget.TextView;
 
+import com.digium.respokesdk.Respoke;
 import com.digium.respokesdk.RespokeCall;
 import com.digium.respokesdk.RespokeClient;
-import com.digium.respokesdk.RespokeClientDelegate;
 import com.digium.respokesdk.RespokeEndpoint;
 import com.digium.respokesdk.RespokeGroup;
-import com.digium.respokesdk.RespokeTaskCompletionDelegate;
 
 import java.util.ArrayList;
 
 
-public class GroupListActivity extends Activity implements AdapterView.OnItemClickListener, RespokeClientDelegate {
+public class GroupListActivity extends Activity implements AdapterView.OnItemClickListener, RespokeClient.Listener {
 
     private final static String TAG = "GroupListActivity";
     private ListDataAdapter listAdapter;
@@ -50,7 +49,7 @@ public class GroupListActivity extends Activity implements AdapterView.OnItemCli
 
         lv.setOnItemClickListener(this);
 
-        ContactManager.sharedInstance().sharedClient.delegate = this;
+        ContactManager.sharedInstance().sharedClient.listener = this;
     }
 
     @Override
@@ -150,7 +149,7 @@ public class GroupListActivity extends Activity implements AdapterView.OnItemCli
         String nextGroupID = groupsToJoin.get(0);
         groupsToJoin.remove(0);
 
-        ContactManager.sharedInstance().joinGroup(nextGroupID, new RespokeTaskCompletionDelegate() {
+        ContactManager.sharedInstance().joinGroup(nextGroupID, new Respoke.TaskCompletionListener() {
             @Override
             public void onSuccess() {
                 if (groupsToJoin.size() > 0) {

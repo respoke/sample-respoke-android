@@ -5,15 +5,11 @@ import android.content.Intent;
 import android.support.v4.content.LocalBroadcastManager;
 import android.util.Log;
 
+import com.digium.respokesdk.Respoke;
 import com.digium.respokesdk.RespokeClient;
 import com.digium.respokesdk.RespokeConnection;
 import com.digium.respokesdk.RespokeEndpoint;
-import com.digium.respokesdk.RespokeEndpointDelegate;
-import com.digium.respokesdk.RespokeGetGroupMembersCompletionDelegate;
 import com.digium.respokesdk.RespokeGroup;
-import com.digium.respokesdk.RespokeGroupDelegate;
-import com.digium.respokesdk.RespokeJoinGroupCompletionDelegate;
-import com.digium.respokesdk.RespokeTaskCompletionDelegate;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -22,7 +18,7 @@ import java.util.Map;
 /**
  * Created by jasonadams on 9/14/14.
  */
-public class ContactManager implements RespokeGroupDelegate, RespokeEndpointDelegate {
+public class ContactManager implements RespokeGroup.Listener, RespokeEndpoint.Listener {
     
     public static final String ENDPOINT_MESSAGE_RECEIVED = "ENDPOINT_MESSAGE_RECEIVED";
     public static final String GROUP_MEMBERSHIP_CHANGED = "GROUP_MEMBERSHIP_CHANGED";
@@ -68,17 +64,17 @@ public class ContactManager implements RespokeGroupDelegate, RespokeEndpointDele
     }
 
 
-    public void joinGroup(final String groupName, final RespokeTaskCompletionDelegate completionDelegate) {
+    public void joinGroup(final String groupName, final Respoke.TaskCompletionListener completionListener) {
         if (null != sharedClient) {
-            sharedClient.joinGroup(groupName, new RespokeJoinGroupCompletionDelegate() {
+            sharedClient.joinGroup(groupName, new RespokeClient.JoinGroupCompletionDelegate() {
                 @Override
                 public void onSuccess(final RespokeGroup group) {
                     Log.d(TAG, "Group joined, fetching member list");
 
-                    group.delegate = ContactManager.this;
+                    group.listener = ContactManager.this;
                     groups.add(group);
 
-                    group.getMembers(new RespokeGetGroupMembersCompletionDelegate() {
+                    group.getMembers(new RespokeGroup.GetGroupMembersCompletionListener() {
                         @Override
                         public void onSuccess(ArrayList<RespokeConnection> memberArray) {
                             // Establish the connection and endpoint tracking arrays for this group
@@ -99,7 +95,7 @@ public class ContactManager implements RespokeGroupDelegate, RespokeEndpointDele
                                 // If this endpoint is not known in any group, remember it
                                 if (-1 == allKnownEndpoints.indexOf(parentEndpoint)) {
                                     allKnownEndpoints.add(parentEndpoint);
-                                    parentEndpoint.delegate = ContactManager.this;
+                                    parentEndpoint.listener = ContactManager.this;
 
                                     // Start tracking the conversation with this endpoint
                                     Conversation conversation = new Conversation(parentEndpoint.getEndpointID());
@@ -119,27 +115,27 @@ public class ContactManager implements RespokeGroupDelegate, RespokeEndpointDele
 
                             //TODO register presence
 
-                            completionDelegate.onSuccess();
+                            completionListener.onSuccess();
                         }
 
                         @Override
                         public void onError(String errorMessage) {
-                            completionDelegate.onError(errorMessage);
+                            completionListener.onError(errorMessage);
                         }
                     });
                 }
 
                 @Override
                 public void onError(String errorMessage) {
-                    completionDelegate.onError(errorMessage);
+                    completionListener.onError(errorMessage);
                 }
             });
         }
     }
 
 
-    public void leaveGroup(final RespokeGroup group, final RespokeTaskCompletionDelegate completionDelegate) {
-        group.leave(new RespokeTaskCompletionDelegate() {
+    public void leaveGroup(final RespokeGroup group, final Respoke.TaskCompletionListener completionListener) {
+        group.leave(new Respoke.TaskCompletionListener() {
             @Override
             public void onSuccess() {
                 String groupName = group.getGroupID();
@@ -178,12 +174,12 @@ public class ContactManager implements RespokeGroupDelegate, RespokeEndpointDele
                 intent.putExtra("groupID", group.getGroupID());
                 LocalBroadcastManager.getInstance(context).sendBroadcast(intent);
 
-                completionDelegate.onSuccess();
+                completionListener.onSuccess();
             }
 
             @Override
             public void onError(String errorMessage) {
-                completionDelegate.onError(errorMessage);
+                completionListener.onError(errorMessage);
             }
         });
     }
@@ -220,7 +216,7 @@ public class ContactManager implements RespokeGroupDelegate, RespokeEndpointDele
             if (-1 == allKnownEndpoints.indexOf(parentEndpoint)) {
                 Log.d(TAG, "Joined: " + parentEndpoint.getEndpointID());
                 allKnownEndpoints.add(parentEndpoint);
-                parentEndpoint.delegate = this;
+                parentEndpoint.listener = this;
 
                 // Start tracking the conversation with this endpoint
                 Conversation conversation = new Conversation(parentEndpoint.getEndpointID());

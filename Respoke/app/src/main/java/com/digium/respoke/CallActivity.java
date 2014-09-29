@@ -2,7 +2,6 @@ package com.digium.respoke;
 
 import com.digium.respoke.util.SystemUiHider;
 import com.digium.respokesdk.RespokeCall;
-import com.digium.respokesdk.RespokeCallDelegate;
 import com.digium.respokesdk.RespokeEndpoint;
 
 import android.annotation.TargetApi;
@@ -31,7 +30,7 @@ import org.webrtc.PeerConnectionFactory;
  *
  * @see SystemUiHider
  */
-public class CallActivity extends Activity implements RespokeCallDelegate {
+public class CallActivity extends Activity implements RespokeCall.Listener {
 
     private final static String TAG = "CallActivity";
     private boolean audioOnly;

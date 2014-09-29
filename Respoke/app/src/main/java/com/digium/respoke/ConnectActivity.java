@@ -20,14 +20,10 @@ import android.widget.TextView;
 import com.digium.respokesdk.Respoke;
 import com.digium.respokesdk.RespokeCall;
 import com.digium.respokesdk.RespokeClient;
-import com.digium.respokesdk.RespokeClientDelegate;
-import com.digium.respokesdk.RespokeGroup;
-import com.digium.respokesdk.RespokeJoinGroupCompletionDelegate;
-import com.digium.respokesdk.RespokeTaskCompletionDelegate;
 import com.digium.respokesdk.RestAPI.*;
 
 
-public class ConnectActivity extends Activity implements RespokeClientDelegate, View.OnKeyListener, TextWatcher {
+public class ConnectActivity extends Activity implements RespokeClient.Listener, View.OnKeyListener, TextWatcher {
 
     private static final String TAG = "ConnectActivity";
     private static final String RESPOKE_SETTINGS = "RESPOKE_SETTINGS";
@@ -166,8 +162,8 @@ public class ConnectActivity extends Activity implements RespokeClientDelegate, 
                 isConnecting = true;
 
                 ContactManager.sharedInstance().sharedClient = Respoke.sharedInstance().createClient(this);
-                ContactManager.sharedInstance().sharedClient.delegate = this;
-                ContactManager.sharedInstance().sharedClient.connect(endpointID, appID, true, null, this.getApplicationContext(), new RespokeTaskCompletionDelegate() {
+                ContactManager.sharedInstance().sharedClient.listener = this;
+                ContactManager.sharedInstance().sharedClient.connect(endpointID, appID, true, null, this.getApplicationContext(), new Respoke.TaskCompletionListener() {
                     @Override
                     public void onSuccess() {
                         // Do nothing. The onConnect delegate method will be called if successful
@@ -210,13 +206,13 @@ public class ConnectActivity extends Activity implements RespokeClientDelegate, 
         String defaultGroupID = "RespokeTeam";
         String groupID = groupTextBox.getText().toString();
 
-        if ((groupID == null) && (groupID.length() <= 0)) {
+        if ((groupID != null) && (groupID.length() <= 0)) {
             groupID = defaultGroupID;
         }
 
         ContactManager.sharedInstance().username = sender.getEndpointID();
 
-        ContactManager.sharedInstance().joinGroup(groupID, new RespokeTaskCompletionDelegate() {
+        ContactManager.sharedInstance().joinGroup(groupID, new Respoke.TaskCompletionListener() {
             @Override
             public void onSuccess() {
                 isConnecting = false;

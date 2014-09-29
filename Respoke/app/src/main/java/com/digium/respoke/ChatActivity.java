@@ -25,9 +25,8 @@ import android.widget.EditText;
 import android.widget.ListView;
 import android.widget.TextView;
 
+import com.digium.respokesdk.Respoke;
 import com.digium.respokesdk.RespokeEndpoint;
-import com.digium.respokesdk.RespokeGroup;
-import com.digium.respokesdk.RespokeTaskCompletionDelegate;
 
 
 public class ChatActivity extends FragmentActivity {
@@ -37,7 +36,6 @@ public class ChatActivity extends FragmentActivity {
     private ListDataAdapter listAdapter;
     private RespokeEndpoint remoteEndpoint;
     private EditText chatText;
-    private Button buttonSend;
 
 
     @Override
@@ -45,7 +43,7 @@ public class ChatActivity extends FragmentActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_chat);
 
-        buttonSend = (Button) findViewById(R.id.buttonSend);
+        Button buttonSend = (Button) findViewById(R.id.buttonSend);
 
         chatText = (EditText) findViewById(R.id.chatText);
         chatText.setOnKeyListener(new View.OnKeyListener() {
@@ -166,7 +164,7 @@ public class ChatActivity extends FragmentActivity {
             listAdapter.notifyDataSetChanged();
             listAdapter.notifyDataSetInvalidated();
 
-            remoteEndpoint.sendMessage(message, new RespokeTaskCompletionDelegate() {
+            remoteEndpoint.sendMessage(message, new Respoke.TaskCompletionListener() {
                 @Override
                 public void onSuccess() {
                     Log.d(TAG, "message sent");
@@ -231,7 +229,22 @@ public class ChatActivity extends FragmentActivity {
     }
 
 
-    public class ChatTypeDialog extends DialogFragment {
+    public static class ChatTypeDialog extends DialogFragment {
+        private ChatActivity mActivity;
+
+
+        @Override
+        public void onAttach(Activity activity)
+        {
+            if (activity instanceof ChatActivity)
+            {
+                mActivity = (ChatActivity) activity;
+            }
+
+            super.onAttach(activity);
+        }
+
+
         @Override
         public Dialog onCreateDialog(Bundle savedInstanceState) {
             AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
@@ -242,14 +255,14 @@ public class ChatActivity extends FragmentActivity {
                             // of the selected item
                             if (which == 0) {
                                 dismiss();
-                                Intent i = new Intent(ChatActivity.this, CallActivity.class);
-                                i.putExtra("endpointID", remoteEndpoint.getEndpointID());
+                                Intent i = new Intent(mActivity, CallActivity.class);
+                                i.putExtra("endpointID", mActivity.remoteEndpoint.getEndpointID());
                                 i.putExtra("audioOnly", false);
                                 startActivity(i);
                             } else if (which == 1) {
                                 dismiss();
-                                Intent i = new Intent(ChatActivity.this, CallActivity.class);
-                                i.putExtra("endpointID", remoteEndpoint.getEndpointID());
+                                Intent i = new Intent(mActivity, CallActivity.class);
+                                i.putExtra("endpointID", mActivity.remoteEndpoint.getEndpointID());
                                 i.putExtra("audioOnly", true);
                                 startActivity(i);
                             } else {
