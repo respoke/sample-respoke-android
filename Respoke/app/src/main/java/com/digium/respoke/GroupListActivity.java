@@ -25,6 +25,7 @@ import com.digium.respokesdk.RespokeClient;
 import com.digium.respokesdk.RespokeEndpoint;
 import com.digium.respokesdk.RespokeGroup;
 
+import java.lang.ref.WeakReference;
 import java.util.ArrayList;
 
 
@@ -49,7 +50,7 @@ public class GroupListActivity extends Activity implements AdapterView.OnItemCli
 
         lv.setOnItemClickListener(this);
 
-        ContactManager.sharedInstance().sharedClient.listener = this;
+        ContactManager.sharedInstance().sharedClient.setListener(this);
     }
 
     @Override

@@ -22,6 +22,8 @@ import com.digium.respokesdk.RespokeCall;
 import com.digium.respokesdk.RespokeClient;
 import com.digium.respokesdk.RestAPI.*;
 
+import java.lang.ref.WeakReference;
+
 
 public class ConnectActivity extends Activity implements RespokeClient.Listener, View.OnKeyListener, TextWatcher {
 
@@ -162,7 +164,7 @@ public class ConnectActivity extends Activity implements RespokeClient.Listener,
                 isConnecting = true;
 
                 ContactManager.sharedInstance().sharedClient = Respoke.sharedInstance().createClient(this);
-                ContactManager.sharedInstance().sharedClient.listener = this;
+                ContactManager.sharedInstance().sharedClient.setListener(this);
                 ContactManager.sharedInstance().sharedClient.connect(endpointID, appID, true, null, this.getApplicationContext(), new Respoke.TaskCompletionListener() {
                     @Override
                     public void onSuccess() {

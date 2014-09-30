@@ -11,6 +11,7 @@ import com.digium.respokesdk.RespokeConnection;
 import com.digium.respokesdk.RespokeEndpoint;
 import com.digium.respokesdk.RespokeGroup;
 
+import java.lang.ref.WeakReference;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
@@ -71,7 +72,7 @@ public class ContactManager implements RespokeGroup.Listener, RespokeEndpoint.Li
                 public void onSuccess(final RespokeGroup group) {
                     Log.d(TAG, "Group joined, fetching member list");
 
-                    group.listener = ContactManager.this;
+                    group.setListener(ContactManager.this);
                     groups.add(group);
 
                     group.getMembers(new RespokeGroup.GetGroupMembersCompletionListener() {
@@ -95,7 +96,7 @@ public class ContactManager implements RespokeGroup.Listener, RespokeEndpoint.Li
                                 // If this endpoint is not known in any group, remember it
                                 if (-1 == allKnownEndpoints.indexOf(parentEndpoint)) {
                                     allKnownEndpoints.add(parentEndpoint);
-                                    parentEndpoint.listener = ContactManager.this;
+                                    parentEndpoint.setListener(ContactManager.this);
 
                                     // Start tracking the conversation with this endpoint
                                     Conversation conversation = new Conversation(parentEndpoint.getEndpointID());
@@ -192,6 +193,7 @@ public class ContactManager implements RespokeGroup.Listener, RespokeEndpoint.Li
         allKnownEndpoints.clear();
         conversations.clear();
         groupConversations.clear();
+        sharedClient = null;
     }
 
 
@@ -216,7 +218,7 @@ public class ContactManager implements RespokeGroup.Listener, RespokeEndpoint.Li
             if (-1 == allKnownEndpoints.indexOf(parentEndpoint)) {
                 Log.d(TAG, "Joined: " + parentEndpoint.getEndpointID());
                 allKnownEndpoints.add(parentEndpoint);
-                parentEndpoint.listener = this;
+                parentEndpoint.setListener(this);
 
                 // Start tracking the conversation with this endpoint
                 Conversation conversation = new Conversation(parentEndpoint.getEndpointID());

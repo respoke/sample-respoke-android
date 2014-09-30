@@ -28,6 +28,8 @@ import android.widget.TextView;
 import com.digium.respokesdk.Respoke;
 import com.digium.respokesdk.RespokeEndpoint;
 
+import java.lang.ref.WeakReference;
+
 
 public class ChatActivity extends FragmentActivity {
 
@@ -230,7 +232,7 @@ public class ChatActivity extends FragmentActivity {
 
 
     public static class ChatTypeDialog extends DialogFragment {
-        private ChatActivity mActivity;
+        private WeakReference<ChatActivity> mActivityReference;
 
 
         @Override
@@ -238,7 +240,7 @@ public class ChatActivity extends FragmentActivity {
         {
             if (activity instanceof ChatActivity)
             {
-                mActivity = (ChatActivity) activity;
+                mActivityReference = new WeakReference<ChatActivity>((ChatActivity) activity);
             }
 
             super.onAttach(activity);
@@ -251,20 +253,26 @@ public class ChatActivity extends FragmentActivity {
             builder.setTitle(R.string.pick_call)
                     .setItems(R.array.call_types, new DialogInterface.OnClickListener() {
                         public void onClick(DialogInterface dialog, int which) {
-                            // The 'which' argument contains the index position
-                            // of the selected item
-                            if (which == 0) {
-                                dismiss();
-                                Intent i = new Intent(mActivity, CallActivity.class);
-                                i.putExtra("endpointID", mActivity.remoteEndpoint.getEndpointID());
-                                i.putExtra("audioOnly", false);
-                                startActivity(i);
-                            } else if (which == 1) {
-                                dismiss();
-                                Intent i = new Intent(mActivity, CallActivity.class);
-                                i.putExtra("endpointID", mActivity.remoteEndpoint.getEndpointID());
-                                i.putExtra("audioOnly", true);
-                                startActivity(i);
+                            ChatActivity mActivity = mActivityReference.get();
+
+                            if (null != mActivity) {
+                                // The 'which' argument contains the index position
+                                // of the selected item
+                                if (which == 0) {
+                                    dismiss();
+                                    Intent i = new Intent(mActivity, CallActivity.class);
+                                    i.putExtra("endpointID", mActivity.remoteEndpoint.getEndpointID());
+                                    i.putExtra("audioOnly", false);
+                                    startActivity(i);
+                                } else if (which == 1) {
+                                    dismiss();
+                                    Intent i = new Intent(mActivity, CallActivity.class);
+                                    i.putExtra("endpointID", mActivity.remoteEndpoint.getEndpointID());
+                                    i.putExtra("audioOnly", true);
+                                    startActivity(i);
+                                } else {
+                                    dismiss();
+                                }
                             } else {
                                 dismiss();
                             }

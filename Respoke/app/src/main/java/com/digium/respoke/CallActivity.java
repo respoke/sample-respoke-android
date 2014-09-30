@@ -119,14 +119,22 @@ public class CallActivity extends Activity implements RespokeCall.Listener {
     @Override
     public void onPause() {
         super.onPause();
-        videoView.onPause();
+
+        if (null != videoView) {
+            videoView.onPause();
+        }
+
         call.pause();
     }
 
     @Override
     public void onResume() {
         super.onResume();
-        videoView.onResume();
+
+        if (videoView != null) {
+            videoView.onResume();
+        }
+
         call.resume();
     }
 
@@ -134,6 +142,7 @@ public class CallActivity extends Activity implements RespokeCall.Listener {
     @Override
     public void onBackPressed() {
         call.hangup(true);
+        videoView = null;
         super.onBackPressed();
     }
 
@@ -149,8 +158,9 @@ public class CallActivity extends Activity implements RespokeCall.Listener {
 
 
     public void hangup(View view) {
-        videoView.onPause();
+        //videoView.onPause();
         call.hangup(true);
+        videoView = null;
         finish();
     }
 
@@ -225,6 +235,7 @@ public class CallActivity extends Activity implements RespokeCall.Listener {
         runOnUiThread(new Runnable() {
             @Override
             public void run() {
+                videoView = null;
                 finish();
             }
         });
