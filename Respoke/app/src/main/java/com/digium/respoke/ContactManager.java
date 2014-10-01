@@ -204,7 +204,6 @@ public class ContactManager implements RespokeGroup.Listener, RespokeEndpoint.Li
         allKnownEndpoints.clear();
         conversations.clear();
         groupConversations.clear();
-        sharedClient = null;
     }
 
 

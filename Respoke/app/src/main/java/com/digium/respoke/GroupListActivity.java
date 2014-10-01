@@ -24,6 +24,7 @@ import android.widget.ArrayAdapter;
 import android.widget.BaseAdapter;
 import android.widget.Button;
 import android.widget.ListView;
+import android.widget.ProgressBar;
 import android.widget.TextView;
 
 import com.digium.respokesdk.Respoke;
@@ -350,25 +351,42 @@ public class GroupListActivity extends FragmentActivity implements AdapterView.O
 
 
     public void setStatus(final String newPresence) {
-        //todo show ui
+        if ((null != ContactManager.sharedInstance().sharedClient) && (ContactManager.sharedInstance().sharedClient.isConnected())) {
+            Button presenceButton = (Button) findViewById(R.id.button1);
+            presenceButton.setVisibility(View.INVISIBLE);
+            ProgressBar progressCircle = (ProgressBar) findViewById(R.id.progress_circle);
+            progressCircle.setVisibility(View.VISIBLE);
 
-        ContactManager.sharedInstance().sharedClient.setPresence(newPresence, new Respoke.TaskCompletionListener() {
-            @Override
-            public void onSuccess() {
-                runOnUiThread(new Runnable() {
-                    @Override
-                    public void run() {
-                        Button presenceButton = (Button)findViewById(R.id.button1);
-                        presenceButton.setText("Your Status: " + newPresence);
-                    }
-                });
-            }
+            ContactManager.sharedInstance().sharedClient.setPresence(newPresence, new Respoke.TaskCompletionListener() {
+                @Override
+                public void onSuccess() {
+                    runOnUiThread(new Runnable() {
+                        @Override
+                        public void run() {
+                            Button presenceButton = (Button) findViewById(R.id.button1);
+                            presenceButton.setText("Your Status: " + newPresence);
+                            presenceButton.setVisibility(View.VISIBLE);
+                            ProgressBar progressCircle = (ProgressBar) findViewById(R.id.progress_circle);
+                            progressCircle.setVisibility(View.INVISIBLE);
+                        }
+                    });
+                }
 
-            @Override
-            public void onError(String errorMessage) {
-                Log.d(TAG, errorMessage);
-            }
-        });
+                @Override
+                public void onError(String errorMessage) {
+                    Log.d(TAG, errorMessage);
+                    runOnUiThread(new Runnable() {
+                        @Override
+                        public void run() {
+                            Button presenceButton = (Button) findViewById(R.id.button1);
+                            presenceButton.setVisibility(View.VISIBLE);
+                            ProgressBar progressCircle = (ProgressBar) findViewById(R.id.progress_circle);
+                            progressCircle.setVisibility(View.INVISIBLE);
+                        }
+                    });
+                }
+            });
+        }
     }
 
 
@@ -376,11 +394,19 @@ public class GroupListActivity extends FragmentActivity implements AdapterView.O
 
 
     public void onConnect(RespokeClient sender) {
-        //todo presence ui changes
+        runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                Button presenceButton = (Button) findViewById(R.id.button1);
+                presenceButton.setVisibility(View.VISIBLE);
+                ProgressBar progressCircle = (ProgressBar)findViewById(R.id.progress_circle);
+                progressCircle.setVisibility(View.INVISIBLE);
 
-        if (null != groupsToJoin) {
-            rejoinGroups();
-        }
+                if (null != groupsToJoin) {
+                    rejoinGroups();
+                }
+            }
+        });
     }
 
 
@@ -396,12 +422,15 @@ public class GroupListActivity extends FragmentActivity implements AdapterView.O
 
             ContactManager.sharedInstance().disconnected();
 
-            //todo presence ui changes
-
             // Update UI on main thread
             runOnUiThread(new Runnable() {
                 @Override
                 public void run() {
+                    Button presenceButton = (Button)findViewById(R.id.button1);
+                    presenceButton.setVisibility(View.INVISIBLE);
+                    ProgressBar progressCircle = (ProgressBar)findViewById(R.id.progress_circle);
+                    progressCircle.setVisibility(View.VISIBLE);
+
                     // Tell the ListView to reconfigure itself based on the new data
                     listAdapter.notifyDataSetChanged();
                     listAdapter.notifyDataSetInvalidated();

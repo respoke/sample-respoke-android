@@ -9,20 +9,37 @@
     tools:context="com.digium.respoke.GroupListActivity">
 
 
-    <Button
-        android:id="@+id/button1"
+
+    <RelativeLayout
+        android:id="@+id/presence_layout"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:onClick="onPresence"
-        android:background="@android:color/transparent"
-        android:text="Your Status: available"
-        android:textColor="@drawable/presence_button_text"/>
+        android:layout_height="wrap_content">
+
+        <Button
+            android:id="@+id/button1"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:onClick="onPresence"
+            android:background="@android:color/transparent"
+            android:text="Your Status: available"
+            android:textColor="@drawable/presence_button_text"/>
+
+        <ProgressBar
+            android:indeterminate="true"
+            android:id="@+id/progress_circle"
+            style="?android:attr/progressBarStyle"
+            android:layout_height="30dp"
+            android:layout_width="wrap_content"
+            android:layout_centerHorizontal="true"
+            android:layout_centerVertical="true"
+            android:visibility="invisible"/>
+    </RelativeLayout>
 
     <ListView
         android:id="@+id/list"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_below="@+id/button1"
+        android:layout_below="@+id/presence_layout"
         android:listSelector="@drawable/listview_selector">
     </ListView>
 
