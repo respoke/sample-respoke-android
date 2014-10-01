@@ -5,4 +5,13 @@
         <item>Audio Only</item>
         <item>Cancel</item>
     </string-array>
+
+    <string-array name="presence_types">
+        <item>chat</item>
+        <item>available</item>
+        <item>away</item>
+        <item>dnd</item>
+        <item>unavailable</item>
+        <item>cancel</item>
+    </string-array>
 </resources>

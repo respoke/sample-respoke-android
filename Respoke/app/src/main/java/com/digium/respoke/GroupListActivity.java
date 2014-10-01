@@ -1,11 +1,17 @@
 package com.digium.respoke;
 
 import android.app.Activity;
+import android.app.AlertDialog;
+import android.app.Dialog;
+import android.app.DialogFragment;
 import android.content.BroadcastReceiver;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.IntentFilter;
+import android.content.res.Resources;
 import android.os.Bundle;
+import android.support.v4.app.FragmentActivity;
 import android.support.v4.content.LocalBroadcastManager;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -16,6 +22,7 @@ import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.BaseAdapter;
+import android.widget.Button;
 import android.widget.ListView;
 import android.widget.TextView;
 
@@ -29,7 +36,7 @@ import java.lang.ref.WeakReference;
 import java.util.ArrayList;
 
 
-public class GroupListActivity extends Activity implements AdapterView.OnItemClickListener, RespokeClient.Listener {
+public class GroupListActivity extends FragmentActivity implements AdapterView.OnItemClickListener, RespokeClient.Listener {
 
     private final static String TAG = "GroupListActivity";
     private ListDataAdapter listAdapter;
@@ -51,6 +58,9 @@ public class GroupListActivity extends Activity implements AdapterView.OnItemCli
         lv.setOnItemClickListener(this);
 
         ContactManager.sharedInstance().sharedClient.setListener(this);
+
+        // set the initial status for this client
+        setStatus("available");
     }
 
     @Override
@@ -127,10 +137,15 @@ public class GroupListActivity extends Activity implements AdapterView.OnItemCli
     @Override
     public void onBackPressed()
     {
-        boolean notConnected = !ContactManager.sharedInstance().sharedClient.isConnected();
+        boolean notConnected = true;
 
-        // send a disconnect either way to let the client clean itself up
-        ContactManager.sharedInstance().sharedClient.disconnect();
+        if (null != ContactManager.sharedInstance().sharedClient)
+        {
+            notConnected = !ContactManager.sharedInstance().sharedClient.isConnected();
+
+            // send a disconnect either way to let the client clean itself up
+            ContactManager.sharedInstance().sharedClient.disconnect();
+        }
 
         if (notConnected) {
             // Switch views immediately, since there will be no callback function
@@ -165,6 +180,12 @@ public class GroupListActivity extends Activity implements AdapterView.OnItemCli
                 Log.d(TAG, "Error rejoining group: " + errorMessage);
             }
         });
+    }
+
+
+    public void onPresence(View view) {
+        PresenceDialog dialog = new PresenceDialog();
+        dialog.show(getFragmentManager(), "status_type");
     }
 
 
@@ -285,7 +306,73 @@ public class GroupListActivity extends Activity implements AdapterView.OnItemCli
     }
 
 
-    // RespokeClientDelegate methods
+    public static class PresenceDialog extends DialogFragment {
+        private WeakReference<GroupListActivity> mActivityReference;
+
+
+        @Override
+        public void onAttach(Activity activity)
+        {
+            if (activity instanceof GroupListActivity)
+            {
+                mActivityReference = new WeakReference<GroupListActivity>((GroupListActivity) activity);
+            }
+
+            super.onAttach(activity);
+        }
+
+
+        @Override
+        public Dialog onCreateDialog(Bundle savedInstanceState) {
+            AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
+            builder.setTitle(R.string.pick_presence)
+                    .setItems(R.array.presence_types, new DialogInterface.OnClickListener() {
+                        public void onClick(DialogInterface dialog, int which) {
+                            GroupListActivity mActivity = mActivityReference.get();
+
+                            if (null != mActivity) {
+                                dismiss();
+                                Resources res = getResources();
+                                String[] presenceTypes = res.getStringArray(R.array.presence_types);
+
+                                if (which < presenceTypes.length - 1) {
+                                    String newPresence = presenceTypes[which];
+                                    mActivity.setStatus(newPresence);
+                                }
+                            } else {
+                                dismiss();
+                            }
+                        }
+                    });
+            return builder.create();
+        }
+    }
+
+
+    public void setStatus(final String newPresence) {
+        //todo show ui
+
+        ContactManager.sharedInstance().sharedClient.setPresence(newPresence, new Respoke.TaskCompletionListener() {
+            @Override
+            public void onSuccess() {
+                runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        Button presenceButton = (Button)findViewById(R.id.button1);
+                        presenceButton.setText("Your Status: " + newPresence);
+                    }
+                });
+            }
+
+            @Override
+            public void onError(String errorMessage) {
+                Log.d(TAG, errorMessage);
+            }
+        });
+    }
+
+
+    // RespokeClientListener methods
 
 
     public void onConnect(RespokeClient sender) {

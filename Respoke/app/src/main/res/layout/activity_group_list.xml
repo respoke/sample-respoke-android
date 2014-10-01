@@ -4,14 +4,25 @@
     android:layout_height="match_parent"
     android:paddingLeft="@dimen/activity_horizontal_margin"
     android:paddingRight="@dimen/activity_horizontal_margin"
-    android:paddingTop="@dimen/activity_vertical_margin"
+    android:paddingTop="0dp"
     android:paddingBottom="@dimen/activity_vertical_margin"
     tools:context="com.digium.respoke.GroupListActivity">
+
+
+    <Button
+        android:id="@+id/button1"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:onClick="onPresence"
+        android:background="@android:color/transparent"
+        android:text="Your Status: available"
+        android:textColor="@drawable/presence_button_text"/>
 
     <ListView
         android:id="@+id/list"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:layout_below="@+id/button1"
         android:listSelector="@drawable/listview_selector">
     </ListView>
 
