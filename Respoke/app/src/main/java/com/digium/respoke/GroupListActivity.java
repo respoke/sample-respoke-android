@@ -258,11 +258,19 @@ public class GroupListActivity extends Activity implements AdapterView.OnItemCli
                 RespokeEndpoint endpoint = (RespokeEndpoint) item;
                 Conversation conversation = ContactManager.sharedInstance().conversations.get(endpoint.getEndpointID());
 
-                View v = LayoutInflater.from(parent.getContext()).inflate( R.layout.list_row_group, parent, false );
-                TextView tvText = (TextView)v.findViewById( R.id.textView1 );
+                View v = LayoutInflater.from(parent.getContext()).inflate( R.layout.list_row_endpoint, parent, false );
+                TextView endpointText = (TextView)v.findViewById( R.id.textView1 );
+                TextView presenceText = (TextView)v.findViewById( R.id.textView2 );
                 TextView unreadCountText = (TextView)v.findViewById( R.id.messageCount );
 
-                tvText.setText(endpoint.getEndpointID());
+                endpointText.setText(endpoint.getEndpointID());
+
+                if (endpoint.presence instanceof String) {
+                    presenceText.setText((String) endpoint.presence);
+                    presenceText.setVisibility(View.VISIBLE);
+                } else {
+                    presenceText.setVisibility(View.INVISIBLE);
+                }
 
                 if (conversation.unreadCount == 0) {
                     unreadCountText.setVisibility(View.INVISIBLE);

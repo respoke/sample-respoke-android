@@ -11,7 +11,6 @@ import com.digium.respokesdk.RespokeConnection;
 import com.digium.respokesdk.RespokeEndpoint;
 import com.digium.respokesdk.RespokeGroup;
 
-import java.lang.ref.WeakReference;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
@@ -114,7 +113,19 @@ public class ContactManager implements RespokeGroup.Listener, RespokeEndpoint.Li
                             intent.putExtra("groupID", group.getGroupID());
                             LocalBroadcastManager.getInstance(context).sendBroadcast(intent);
 
-                            //TODO register presence
+                            for (RespokeEndpoint eachEndpoint : groupEndpoints) {
+                                eachEndpoint.registerPresence(new Respoke.TaskCompletionListener() {
+                                    @Override
+                                    public void onSuccess() {
+                                        // do nothing
+                                    }
+
+                                    @Override
+                                    public void onError(String errorMessage) {
+                                        Log.d(TAG, "Error registering presence: " + errorMessage);
+                                    }
+                                });
+                            }
 
                             completionListener.onSuccess();
                         }
@@ -197,7 +208,7 @@ public class ContactManager implements RespokeGroup.Listener, RespokeEndpoint.Li
     }
 
 
-    // RespokeGroupDelegate methods
+    // RespokeGroupListener methods
 
 
     public void onJoin(RespokeConnection connection, RespokeGroup sender) {
@@ -229,7 +240,17 @@ public class ContactManager implements RespokeGroup.Listener, RespokeEndpoint.Li
                 intent.putExtra("endpointID", parentEndpoint.getEndpointID());
                 LocalBroadcastManager.getInstance(context).sendBroadcast(intent);
 
-                //TODO Register presence
+                parentEndpoint.registerPresence(new Respoke.TaskCompletionListener() {
+                    @Override
+                    public void onSuccess() {
+                        // Do nothing
+                    }
+
+                    @Override
+                    public void onError(String errorMessage) {
+                        Log.d(TAG, "Error registering presence: " + errorMessage);
+                    }
+                });
             }
 
 
@@ -330,7 +351,7 @@ public class ContactManager implements RespokeGroup.Listener, RespokeEndpoint.Li
     }
 
 
-    // RespokeEndpointDelegate methods
+    // RespokeEndpointListener methods
 
 
     public void onMessage(String message, RespokeEndpoint sender) {
