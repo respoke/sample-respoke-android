@@ -73,11 +73,16 @@ public class CallActivity extends Activity implements RespokeCall.Listener {
 
                 remoteEndpoint = ContactManager.sharedInstance().sharedClient.getEndpoint(remoteEndpointID, true);
 
-                if (null == call) {
-                    call = remoteEndpoint.startCall(this, this, videoView, audioOnly);
+                if (null == remoteEndpoint) {
+                    Log.d(TAG, "Couldn't find endpoint record! Aborting call");
+                    finish();
                 } else {
-                    remoteEndpoint = call.endpoint;
-                    call.answer(this, this, videoView);
+                    if (null == call) {
+                        call = remoteEndpoint.startCall(this, this, videoView, audioOnly);
+                    } else {
+                        remoteEndpoint = call.endpoint;
+                        call.answer(this, this, videoView);
+                    }
                 }
             }
         }
