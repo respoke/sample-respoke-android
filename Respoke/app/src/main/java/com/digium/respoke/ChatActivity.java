@@ -152,6 +152,15 @@ public class ChatActivity extends FragmentActivity {
                     listAdapter.notifyDataSetChanged();
                     listAdapter.notifyDataSetInvalidated();
                     conversation.unreadCount = 0;
+
+                    final ListView lv = (ListView)findViewById(R.id.list); //retrieve the instance of the ListView from your main layout
+                    lv.post(new Runnable() {
+                        @Override
+                        public void run() {
+                            // Select the last row so it will scroll into view...
+                            lv.setSelection(listAdapter.getCount() - 1);
+                        }
+                    });
                 }
             }
         }
@@ -169,6 +178,15 @@ public class ChatActivity extends FragmentActivity {
             // Tell the ListView to reconfigure itself based on the new data
             listAdapter.notifyDataSetChanged();
             listAdapter.notifyDataSetInvalidated();
+
+            final ListView lv = (ListView)findViewById(R.id.list); //retrieve the instance of the ListView from your main layout
+            lv.post(new Runnable() {
+                @Override
+                public void run() {
+                    // Select the last row so it will scroll into view...
+                    lv.setSelection(listAdapter.getCount() - 1);
+                }
+            });
 
             remoteEndpoint.sendMessage(message, new Respoke.TaskCompletionListener() {
                 @Override

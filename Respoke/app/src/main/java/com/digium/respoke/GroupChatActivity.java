@@ -145,6 +145,15 @@ public class GroupChatActivity extends Activity {
                     listAdapter.notifyDataSetChanged();
                     listAdapter.notifyDataSetInvalidated();
                     conversation.unreadCount = 0;
+
+                    final ListView lv = (ListView)findViewById(R.id.list); //retrieve the instance of the ListView from your main layout
+                    lv.post(new Runnable() {
+                        @Override
+                        public void run() {
+                            // Select the last row so it will scroll into view...
+                            lv.setSelection(listAdapter.getCount() - 1);
+                        }
+                    });
                 }
             }
         }
@@ -162,6 +171,15 @@ public class GroupChatActivity extends Activity {
             // Tell the ListView to reconfigure itself based on the new data
             listAdapter.notifyDataSetChanged();
             listAdapter.notifyDataSetInvalidated();
+
+            final ListView lv = (ListView)findViewById(R.id.list); //retrieve the instance of the ListView from your main layout
+            lv.post(new Runnable() {
+                @Override
+                public void run() {
+                    // Select the last row so it will scroll into view...
+                    lv.setSelection(listAdapter.getCount() - 1);
+                }
+            });
 
             group.sendMessage(message, new Respoke.TaskCompletionListener() {
                 @Override
@@ -217,10 +235,13 @@ public class GroupChatActivity extends Activity {
 
                 return v;
             } else {
-                View v = LayoutInflater.from(parent.getContext()).inflate(R.layout.list_row_remote_message, parent, false);
+                View v = LayoutInflater.from(parent.getContext()).inflate(R.layout.list_row_remote_group_message, parent, false);
 
-                TextView tvText = (TextView) v.findViewById(R.id.textView1);
-                tvText.setText(message.message);
+                TextView tvMessage = (TextView) v.findViewById(R.id.textViewMessage);
+                tvMessage.setText(message.message);
+
+                TextView tvSender = (TextView) v.findViewById(R.id.textViewSender);
+                tvSender.setText(message.senderEndpoint);
 
                 return v;
             }
