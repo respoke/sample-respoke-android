@@ -7,6 +7,7 @@ import android.content.Intent;
 import android.content.IntentFilter;
 import android.os.Bundle;
 import android.support.v4.content.LocalBroadcastManager;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -17,6 +18,7 @@ import android.widget.BaseAdapter;
 import android.widget.ListView;
 import android.widget.TextView;
 
+import com.digium.respokesdk.Respoke;
 import com.digium.respokesdk.RespokeEndpoint;
 import com.digium.respokesdk.RespokeGroup;
 
@@ -25,8 +27,10 @@ import java.util.ArrayList;
 
 public class GroupActivity extends Activity implements AdapterView.OnItemClickListener {
 
+    private final static String TAG = "GroupActivity";
     private RespokeGroup group;
     private ListDataAdapter listAdapter;
+    private boolean leaving;
 
 
     @Override
@@ -126,7 +130,24 @@ public class GroupActivity extends Activity implements AdapterView.OnItemClickLi
         // automatically handle clicks on the Home/Up button, so long
         // as you specify a parent activity in AndroidManifest.xml.
         int id = item.getItemId();
-        if (id == R.id.action_settings) {
+        if (id == R.id.action_leave) {
+            ContactManager.sharedInstance().leaveGroup(group, new Respoke.TaskCompletionListener() {
+                @Override
+                public void onSuccess() {
+                    leaving = true;
+                    runOnUiThread(new Runnable() {
+                        @Override
+                        public void run() {
+                            finish();
+                        }
+                    });
+                }
+
+                @Override
+                public void onError(String errorMessage) {
+                    Log.d(TAG, errorMessage);
+                }
+            });
             return true;
         }
         return super.onOptionsItemSelected(item);
@@ -155,7 +176,11 @@ public class GroupActivity extends Activity implements AdapterView.OnItemClickLi
 
         @Override
         public int getCount() {
-            return ContactManager.sharedInstance().groupEndpointArrays.get(group.getGroupID()).size() + 3;
+            if (leaving) {
+                return 0;
+            } else {
+                return ContactManager.sharedInstance().groupEndpointArrays.get(group.getGroupID()).size() + 3;
+            }
         }
 
 

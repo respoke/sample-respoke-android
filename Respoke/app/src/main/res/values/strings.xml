@@ -14,6 +14,7 @@
     <string name="title_activity_chat">ChatActivity</string>
     <string name="action_call">Call</string>
     <string name="action_join">Join</string>
+    <string name="action_leave">Leave</string>
     <string name="pick_call">What kind of call?</string>
     <string name="pick_presence">Choose a status</string>
     <string name="title_activity_call">CallActivity</string>
