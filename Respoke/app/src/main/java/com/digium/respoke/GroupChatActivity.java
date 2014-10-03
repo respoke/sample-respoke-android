@@ -1,16 +1,11 @@
 package com.digium.respoke;
 
 import android.app.Activity;
-import android.app.AlertDialog;
-import android.app.Dialog;
-import android.app.DialogFragment;
 import android.content.BroadcastReceiver;
 import android.content.Context;
-import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.os.Bundle;
-import android.support.v4.app.FragmentActivity;
 import android.support.v4.content.LocalBroadcastManager;
 import android.util.Log;
 import android.view.KeyEvent;
@@ -26,29 +21,25 @@ import android.widget.ListView;
 import android.widget.TextView;
 
 import com.digium.respokesdk.Respoke;
-import com.digium.respokesdk.RespokeEndpoint;
-
-import java.lang.ref.WeakReference;
+import com.digium.respokesdk.RespokeGroup;
 
 
-public class ChatActivity extends FragmentActivity {
+public class GroupChatActivity extends Activity {
 
-    private final static String TAG = "ChatActivity";
+    private final static String TAG = "GroupChatActivity";
+    private RespokeGroup group;
     public Conversation conversation;
     private ListDataAdapter listAdapter;
-    private RespokeEndpoint remoteEndpoint;
 
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_chat);
-        getActionBar().setDisplayHomeAsUpEnabled(true);
+        setContentView(R.layout.activity_group_chat);
 
         Button buttonSend = (Button) findViewById(R.id.buttonSend);
 
         EditText chatText = (EditText) findViewById(R.id.chatText);
-        chatText = (EditText) findViewById(R.id.chatText);
         chatText.setOnKeyListener(new View.OnKeyListener() {
             public boolean onKey(View v, int keyCode, KeyEvent event) {
                 if ((event.getAction() == KeyEvent.ACTION_DOWN) && (keyCode == KeyEvent.KEYCODE_ENTER)) {
@@ -65,32 +56,39 @@ public class ChatActivity extends FragmentActivity {
             }
         });
 
-        String remoteEndpointID = null;
+        String groupID = null;
 
         // Check whether we're recreating a previously destroyed instance
         if (savedInstanceState != null) {
-            remoteEndpointID = savedInstanceState.getString("endpointID");
+            groupID = savedInstanceState.getString("groupID");
         } else {
             Bundle extras = getIntent().getExtras();
             if (extras != null) {
-                remoteEndpointID = extras.getString("endpointID");
+                groupID = extras.getString("groupID");
             }
         }
 
-        conversation = ContactManager.sharedInstance().conversations.get(remoteEndpointID);
-        remoteEndpoint = ContactManager.sharedInstance().sharedClient.getEndpoint(remoteEndpointID, true);
-        setTitle(remoteEndpoint.getEndpointID());
+        this.setTitle(groupID);
+
+        for (RespokeGroup eachGroup : ContactManager.sharedInstance().groups) {
+            if (eachGroup.getGroupID().equals(groupID)) {
+                group = eachGroup;
+                break;
+            }
+        }
+
+        conversation = ContactManager.sharedInstance().groupConversations.get(groupID);
 
         listAdapter = new ListDataAdapter();
 
-        ListView lv = (ListView) findViewById(R.id.list); //retrieve the instance of the ListView from your main layout
+        ListView lv = (ListView)findViewById(R.id.list); //retrieve the instance of the ListView from your main layout
         lv.setAdapter(listAdapter); //assign the Adapter to be used by the ListView
     }
 
 
     @Override
     public void onSaveInstanceState(Bundle savedInstanceState) {
-        savedInstanceState.putString("endpointID", remoteEndpoint.getEndpointID());
+        savedInstanceState.putString("groupID", group.getGroupID());
 
         // Always call the superclass so it can save the view hierarchy state
         super.onSaveInstanceState(savedInstanceState);
@@ -100,23 +98,18 @@ public class ChatActivity extends FragmentActivity {
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         // Inflate the menu; this adds items to the action bar if it is present.
-        getMenuInflater().inflate(R.menu.chat, menu);
+        getMenuInflater().inflate(R.menu.group_chat, menu);
         return true;
     }
 
-
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
-        switch (item.getItemId()) {
-            case R.id.action_call:
-                ChatTypeDialog dialog = new ChatTypeDialog();
-                dialog.show(getFragmentManager(), "chat_type");
-                return true;
-
-            // Respond to the action bar's Up/Home button
-            case android.R.id.home:
-                finish();
-                return true;
+        // Handle action bar item clicks here. The action bar will
+        // automatically handle clicks on the Home/Up button, so long
+        // as you specify a parent activity in AndroidManifest.xml.
+        int id = item.getItemId();
+        if (id == R.id.action_settings) {
+            return true;
         }
         return super.onOptionsItemSelected(item);
     }
@@ -125,7 +118,7 @@ public class ChatActivity extends FragmentActivity {
     protected void onResume() {
         super.onResume();
 
-        IntentFilter iff = new IntentFilter(ContactManager.ENDPOINT_MESSAGE_RECEIVED);
+        IntentFilter iff = new IntentFilter(ContactManager.GROUP_MESSAGE_RECEIVED);
         LocalBroadcastManager.getInstance(this).registerReceiver(contactDataInvalidatedReceiver, iff);
 
         conversation.unreadCount = 0;
@@ -145,9 +138,9 @@ public class ChatActivity extends FragmentActivity {
         public void onReceive(Context context, Intent intent) {
             Bundle extras = intent.getExtras();
             if (extras != null) {
-                String endpointID = extras.getString("endpointID");
+                String groupID = extras.getString("groupID");
 
-                if (endpointID.equals(remoteEndpoint.getEndpointID())) {
+                if (groupID.equals(group.getGroupID())) {
                     // Tell the ListView to reconfigure itself based on the new data
                     listAdapter.notifyDataSetChanged();
                     listAdapter.notifyDataSetInvalidated();
@@ -170,7 +163,7 @@ public class ChatActivity extends FragmentActivity {
             listAdapter.notifyDataSetChanged();
             listAdapter.notifyDataSetInvalidated();
 
-            remoteEndpoint.sendMessage(message, new Respoke.TaskCompletionListener() {
+            group.sendMessage(message, new Respoke.TaskCompletionListener() {
                 @Override
                 public void onSuccess() {
                     Log.d(TAG, "message sent");
@@ -234,55 +227,4 @@ public class ChatActivity extends FragmentActivity {
         }
     }
 
-
-    public static class ChatTypeDialog extends DialogFragment {
-        private WeakReference<ChatActivity> mActivityReference;
-
-
-        @Override
-        public void onAttach(Activity activity)
-        {
-            if (activity instanceof ChatActivity)
-            {
-                mActivityReference = new WeakReference<ChatActivity>((ChatActivity) activity);
-            }
-
-            super.onAttach(activity);
-        }
-
-
-        @Override
-        public Dialog onCreateDialog(Bundle savedInstanceState) {
-            AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
-            builder.setTitle(R.string.pick_call)
-                    .setItems(R.array.call_types, new DialogInterface.OnClickListener() {
-                        public void onClick(DialogInterface dialog, int which) {
-                            ChatActivity mActivity = mActivityReference.get();
-
-                            if (null != mActivity) {
-                                // The 'which' argument contains the index position
-                                // of the selected item
-                                if (which == 0) {
-                                    dismiss();
-                                    Intent i = new Intent(mActivity, CallActivity.class);
-                                    i.putExtra("endpointID", mActivity.remoteEndpoint.getEndpointID());
-                                    i.putExtra("audioOnly", false);
-                                    startActivity(i);
-                                } else if (which == 1) {
-                                    dismiss();
-                                    Intent i = new Intent(mActivity, CallActivity.class);
-                                    i.putExtra("endpointID", mActivity.remoteEndpoint.getEndpointID());
-                                    i.putExtra("audioOnly", true);
-                                    startActivity(i);
-                                } else {
-                                    dismiss();
-                                }
-                            } else {
-                                dismiss();
-                            }
-                        }
-                    });
-            return builder.create();
-        }
-    }
 }
