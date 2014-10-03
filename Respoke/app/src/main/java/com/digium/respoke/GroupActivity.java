@@ -67,6 +67,16 @@ public class GroupActivity extends Activity implements AdapterView.OnItemClickLi
         lv.setOnItemClickListener(this);
     }
 
+
+    @Override
+    public void onSaveInstanceState(Bundle savedInstanceState) {
+        savedInstanceState.putString("groupID", group.getGroupID());
+
+        // Always call the superclass so it can save the view hierarchy state
+        super.onSaveInstanceState(savedInstanceState);
+    }
+
+
     @Override
     protected void onResume() {
         super.onResume();
@@ -164,9 +174,9 @@ public class GroupActivity extends Activity implements AdapterView.OnItemClickLi
             i.putExtra("endpointID", ((RespokeEndpoint) item).getEndpointID());
             startActivity(i);
         } else if (item instanceof RespokeGroup) {
-            /*Intent i = new Intent(this, GroupActivity.class);
+            Intent i = new Intent(this, GroupChatActivity.class);
             i.putExtra("groupID", ((RespokeGroup) item).getGroupID());
-            startActivity(i);*/
+            startActivity(i);
         }
     }
 
