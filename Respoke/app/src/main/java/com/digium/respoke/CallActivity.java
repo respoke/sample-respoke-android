@@ -4,6 +4,7 @@ import com.digium.respokesdk.RespokeCall;
 import com.digium.respokesdk.RespokeEndpoint;
 
 import android.app.Activity;
+import android.opengl.GLSurfaceView;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
@@ -21,7 +22,6 @@ public class CallActivity extends Activity implements RespokeCall.Listener {
     private boolean audioOnly;
     private RespokeCall call;
     private RespokeEndpoint remoteEndpoint;
-    private CallVideoView videoView;
     private boolean audioMuted;
     private boolean videoMuted;
     private ImageButton muteAudioButton;
@@ -36,16 +36,11 @@ public class CallActivity extends Activity implements RespokeCall.Listener {
 
         setContentView(R.layout.activity_call);
 
-        videoView = (CallVideoView) findViewById(R.id.videoview);
+        GLSurfaceView videoView = (GLSurfaceView) findViewById(R.id.videoview);
         muteAudioButton = (ImageButton) findViewById(R.id.mute_audio_button);
         muteVideoButton = (ImageButton) findViewById(R.id.mute_video_button);
         connectingTextView = (TextView) findViewById(R.id.connecting_text_view);
         progressCircle = (ProgressBar) findViewById(R.id.progress_circle);
-
-        /*Point displaySize = new Point();
-        getWindowManager().getDefaultDisplay().getRealSize(displaySize);
-
-        videoView.updateDisplaySize(displaySize);*/
 
         String remoteEndpointID = null;
         String callID = null;
@@ -73,16 +68,13 @@ public class CallActivity extends Activity implements RespokeCall.Listener {
 
                 remoteEndpoint = ContactManager.sharedInstance().sharedClient.getEndpoint(remoteEndpointID, true);
 
-                if (null == remoteEndpoint) {
-                    Log.d(TAG, "Couldn't find endpoint record! Aborting call");
-                    finish();
-                } else {
-                    if (null == call) {
+                if (null == call) {
+                    if (null != remoteEndpoint) {
                         call = remoteEndpoint.startCall(this, this, videoView, audioOnly);
-                    } else {
-                        remoteEndpoint = call.endpoint;
-                        call.answer(this, this, videoView);
                     }
+                } else {
+                    remoteEndpoint = call.endpoint;
+                    call.answer(this, this, videoView);
                 }
             }
         }
@@ -91,7 +83,12 @@ public class CallActivity extends Activity implements RespokeCall.Listener {
             muteVideoButton.setVisibility(View.INVISIBLE);
         }
 
-        this.setTitle("Call With " + remoteEndpoint.getEndpointID());
+        if (null == remoteEndpoint) {
+            Log.d(TAG, "Couldn't find endpoint record! Aborting call");
+            finish();
+        } else {
+            this.setTitle("Call With " + remoteEndpoint.getEndpointID());
+        }
     }
 
 
@@ -110,6 +107,7 @@ public class CallActivity extends Activity implements RespokeCall.Listener {
     public void onPause() {
         super.onPause();
 
+        GLSurfaceView videoView = (GLSurfaceView) findViewById(R.id.videoview);
         if (null != videoView) {
             videoView.onPause();
         }
@@ -121,6 +119,7 @@ public class CallActivity extends Activity implements RespokeCall.Listener {
     public void onResume() {
         super.onResume();
 
+        GLSurfaceView videoView = (GLSurfaceView) findViewById(R.id.videoview);
         if (videoView != null) {
             videoView.onResume();
         }
@@ -132,25 +131,14 @@ public class CallActivity extends Activity implements RespokeCall.Listener {
     @Override
     public void onBackPressed() {
         call.hangup(true);
-        videoView = null;
+
         super.onBackPressed();
     }
 
 
-    /*@Override
-    public void onConfigurationChanged (Configuration newConfig) {
-        Point displaySize = new Point();
-        getWindowManager().getDefaultDisplay().getSize(displaySize);
-        videoView.updateDisplaySize(displaySize);
-        Log.d(TAG, "configurationChanged: " + displaySize.x + " " + displaySize.y);
-        super.onConfigurationChanged(newConfig);
-    }*/
-
-
     public void hangup(View view) {
-        //videoView.onPause();
         call.hangup(true);
-        videoView = null;
+
         finish();
     }
 
@@ -225,7 +213,6 @@ public class CallActivity extends Activity implements RespokeCall.Listener {
         runOnUiThread(new Runnable() {
             @Override
             public void run() {
-                videoView = null;
                 finish();
             }
         });
