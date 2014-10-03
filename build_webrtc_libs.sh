@@ -170,9 +170,12 @@ execute_build() {
   cp -p "$DIRECTORY/libjingle_peerconnection_so.so" "$RELEASE_DIR/lib/$ARCHITECTURE/libjingle_peerconnection_so.so"
 
   echo "Build libjingle_peerconnection_so.jar"
-  zip -r "$WORKING_DIR/Respoke/respokeSDK/libs/libjingle_peerconnection_so.jar" "$WORKING_DIR/Respoke/respokeSDK/libs/lib"
-  rm -rf "$WORKING_DIR/Respoke/respokeSDK/libs/lib"
+  cd "$WORKING_DIR/Respoke/respokeSDK/libs"
+  zip -r libjingle_peerconnection_so.jar lib
+  rm -rf lib
   
+  cd "$WEBRTC_ROOT/trunk"
+
   echo "Copy $WEBRTC_ROOT/trunk/talk/examples/android/libs/libjingle_peerconnection.jar to $RELEASE_DIR/libjingle_peerconnection.jar"
   cp -p "$WEBRTC_ROOT/trunk/talk/examples/android/libs/libjingle_peerconnection.jar" "$RELEASE_DIR/libjingle_peerconnection.jar"
 
