@@ -6,10 +6,13 @@
     <uses-permission android:name="android.permission.CAMERA" />
     <uses-permission android:name="android.permission.MODIFY_AUDIO_SETTINGS" />
     <uses-permission android:name="android.permission.RECORD_AUDIO" />
-    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE"/>
+    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
+
     <uses-feature android:name="android.hardware.camera" />
     <uses-feature android:name="android.hardware.camera.autofocus" />
-    <uses-feature android:glEsVersion="0x00020000" android:required="true"></uses-feature>
+    <uses-feature
+        android:glEsVersion="0x00020000"
+        android:required="true" />
 
     <application
         android:allowBackup="true"
@@ -43,6 +46,10 @@
             android:label="@string/title_activity_call"
             android:screenOrientation="portrait"
             android:theme="@android:style/android:Theme.Holo.Light.NoActionBar" >
+        </activity>
+        <activity
+            android:name=".GroupActivity"
+            android:label="@string/title_activity_group" >
         </activity>
     </application>
 

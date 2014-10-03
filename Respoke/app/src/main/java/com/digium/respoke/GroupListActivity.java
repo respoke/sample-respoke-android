@@ -199,6 +199,10 @@ public class GroupListActivity extends FragmentActivity implements AdapterView.O
             Intent i = new Intent(this, ChatActivity.class);
             i.putExtra("endpointID", ((RespokeEndpoint) item).getEndpointID());
             startActivity(i);
+        } else if (item instanceof RespokeGroup) {
+            Intent i = new Intent(this, GroupActivity.class);
+            i.putExtra("groupID", ((RespokeGroup) item).getGroupID());
+            startActivity(i);
         }
     }
 
