@@ -1,34 +1,19 @@
 package com.digium.respoke;
 
-import com.digium.respoke.util.SystemUiHider;
 import com.digium.respokesdk.RespokeCall;
 import com.digium.respokesdk.RespokeEndpoint;
 
-import android.annotation.TargetApi;
 import android.app.Activity;
-import android.app.AlertDialog;
-import android.content.DialogInterface;
-import android.content.res.Configuration;
-import android.graphics.Point;
-import android.opengl.GLSurfaceView;
-import android.os.Build;
 import android.os.Bundle;
-import android.os.Handler;
 import android.util.Log;
-import android.view.MotionEvent;
 import android.view.View;
 import android.widget.ImageButton;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 
-import org.webrtc.PeerConnectionFactory;
-
 
 /**
- * An example full-screen activity that shows and hides the system UI (i.e.
- * status bar and navigation/system bar) with user interaction.
  *
- * @see SystemUiHider
  */
 public class CallActivity extends Activity implements RespokeCall.Listener {
 
