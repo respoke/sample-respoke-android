@@ -16,13 +16,11 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ProgressBar;
 import android.widget.TextView;
+import android.widget.ToggleButton;
 
 import com.digium.respokesdk.Respoke;
 import com.digium.respokesdk.RespokeCall;
 import com.digium.respokesdk.RespokeClient;
-import com.digium.respokesdk.RestAPI.*;
-
-import java.lang.ref.WeakReference;
 
 
 public class ConnectActivity extends Activity implements RespokeClient.Listener, View.OnKeyListener, TextWatcher {
@@ -33,13 +31,8 @@ public class ConnectActivity extends Activity implements RespokeClient.Listener,
     private static final String LAST_GROUP_KEY = "LAST_GROUP_KEY";
     private static final String LAST_APP_ID_KEY = "LAST_APP_ID_KEYs";
 
-    private EditText endpointTextBox = null;
-    private EditText groupTextBox = null;
-    private TextView errorMessageView = null;
-    private APIGetToken apiGetToken = null;
-    private ProgressBar progressCircle = null;
-    private Button connectButton = null;
     private boolean isConnecting = false;
+    private boolean brokeredAuthOn = false;
 
 
     @Override
@@ -47,11 +40,9 @@ public class ConnectActivity extends Activity implements RespokeClient.Listener,
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_connect);
 
-        endpointTextBox = (EditText)findViewById(R.id.editText1);
-        groupTextBox = (EditText)findViewById(R.id.editText2);
-        errorMessageView = (TextView)findViewById(R.id.error_message);
-        connectButton = (Button)findViewById(R.id.button1);
-        progressCircle = (ProgressBar)findViewById(R.id.progress_circle);
+        EditText endpointTextBox = (EditText)findViewById(R.id.editText1);
+        EditText groupTextBox = (EditText)findViewById(R.id.editText2);
+        TextView errorMessageView = (TextView)findViewById(R.id.error_message);
 
         // Give the Contact manager initial context
         ContactManager.sharedInstance().context = this.getApplicationContext();
@@ -109,6 +100,7 @@ public class ConnectActivity extends Activity implements RespokeClient.Listener,
             if (!event.isShiftPressed()) {
                 switch (view.getId()) {
                     case R.id.editText1:
+                        EditText groupTextBox = (EditText)findViewById(R.id.editText2);
                         groupTextBox.requestFocus();
                         break;
                     case R.id.editText2:
@@ -133,6 +125,7 @@ public class ConnectActivity extends Activity implements RespokeClient.Listener,
 
     @Override
     public void onTextChanged(CharSequence charSequence, int i, int i2, int i3) {
+        TextView errorMessageView = (TextView)findViewById(R.id.error_message);
         errorMessageView.setText("");
     }
 
@@ -146,9 +139,14 @@ public class ConnectActivity extends Activity implements RespokeClient.Listener,
 
 
     public void connect(View view) {
+        Button connectButton = (Button)findViewById(R.id.button1);
+        ProgressBar progressCircle = (ProgressBar)findViewById(R.id.progress_circle);
+        EditText endpointTextBox = (EditText)findViewById(R.id.editText1);
+        EditText groupTextBox = (EditText)findViewById(R.id.editText2);
+        TextView errorMessageView = (TextView)findViewById(R.id.error_message);
+
         String endpointID = endpointTextBox.getText().toString();
         String groupID = groupTextBox.getText().toString();
-        String appID = "2b446810-6d92-4fa4-826a-2eabced82d60";
 
         if (!isConnecting) {
             if (endpointID.length() > 0) {
@@ -165,17 +163,35 @@ public class ConnectActivity extends Activity implements RespokeClient.Listener,
 
                 ContactManager.sharedInstance().sharedClient = Respoke.sharedInstance().createClient(this);
                 ContactManager.sharedInstance().sharedClient.setListener(this);
-                ContactManager.sharedInstance().sharedClient.connect(endpointID, appID, true, null, this.getApplicationContext(), new Respoke.TaskCompletionListener() {
-                    @Override
-                    public void onSuccess() {
-                        // Do nothing. The onConnect delegate method will be called if successful
-                    }
 
-                    @Override
-                    public void onError(String errorMessage) {
-                        showError(errorMessage);
-                    }
-                });
+                if (brokeredAuthOn) {
+                    // The text in the endpointTextBox is actually the Token ID in this case
+                    ContactManager.sharedInstance().sharedClient.connect(endpointID, null, this, new Respoke.TaskCompletionListener() {
+                        @Override
+                        public void onSuccess() {
+                            // Do nothing. The onConnect delegate method will be called if successful
+                        }
+
+                        @Override
+                        public void onError(String errorMessage) {
+                            showError(errorMessage);
+                        }
+                    });
+                } else {
+                    String appID = "2b446810-6d92-4fa4-826a-2eabced82d60";
+
+                    ContactManager.sharedInstance().sharedClient.connect(endpointID, appID, true, null, this.getApplicationContext(), new Respoke.TaskCompletionListener() {
+                        @Override
+                        public void onSuccess() {
+                            // Do nothing. The onConnect delegate method will be called if successful
+                        }
+
+                        @Override
+                        public void onError(String errorMessage) {
+                            showError(errorMessage);
+                        }
+                    });
+                }
             } else {
                 endpointTextBox.requestFocus();
                 errorMessageView.setText("Username may not be blank");
@@ -191,6 +207,10 @@ public class ConnectActivity extends Activity implements RespokeClient.Listener,
         runOnUiThread(new Runnable() {
             @Override
             public void run() {
+                Button connectButton = (Button)findViewById(R.id.button1);
+                ProgressBar progressCircle = (ProgressBar)findViewById(R.id.progress_circle);
+                TextView errorMessageView = (TextView)findViewById(R.id.error_message);
+
                 progressCircle.setVisibility(View.INVISIBLE);
                 errorMessageView.setText(message);
                 connectButton.setText("Connect");
@@ -199,12 +219,28 @@ public class ConnectActivity extends Activity implements RespokeClient.Listener,
     }
 
 
-    // RespokeClientDelegate methods
+    public void onBrokeredAuthClicked(View view) {
+        // Is the toggle on?
+        brokeredAuthOn = ((ToggleButton) view).isChecked();
+        EditText endpointTextBox = (EditText)findViewById(R.id.editText1);
+
+        if (brokeredAuthOn) {
+            // Enable Brokered Auth
+            endpointTextBox.setHint("Token ID");
+        } else {
+            // Disable Brokered Auth
+            endpointTextBox.setHint("Endpoint ID");
+        }
+    }
+
+
+    // RespokeClientListener methods
 
 
     public void onConnect(RespokeClient sender) {
         Log.d(TAG, "Connected to Respoke! Joining group...");
 
+        EditText groupTextBox = (EditText)findViewById(R.id.editText2);
         String defaultGroupID = "RespokeTeam";
         String groupID = groupTextBox.getText().toString();
 
@@ -225,6 +261,10 @@ public class ConnectActivity extends Activity implements RespokeClient.Listener,
                     public void run() {
                         Intent i = new Intent(ConnectActivity.this, GroupListActivity.class);
                         startActivity(i);
+
+                        Button connectButton = (Button)findViewById(R.id.button1);
+                        ProgressBar progressCircle = (ProgressBar)findViewById(R.id.progress_circle);
+                        TextView errorMessageView = (TextView)findViewById(R.id.error_message);
 
                         progressCircle.setVisibility(View.INVISIBLE);
                         errorMessageView.setText("");
