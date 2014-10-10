@@ -22,5 +22,7 @@
     <string name="dummy_content">DUMMY\nCONTENT</string>
     <string name="title_activity_group">GroupActivity</string>
     <string name="title_activity_group_chat">GroupChatActivity</string>
+    <string name="group_id">Group ID</string>
+    <string name="join_a_group">Join A Group:</string>
 
 </resources>

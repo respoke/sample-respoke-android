@@ -74,18 +74,20 @@ public class ContactManager implements RespokeGroup.Listener, RespokeEndpoint.Li
                     group.setListener(ContactManager.this);
                     groups.add(group);
 
+                    // Establish the connection and endpoint tracking arrays for this group
+                    groupConnectionArrays.put(groupName, new ArrayList<RespokeConnection>());
+
+                    final ArrayList<RespokeEndpoint> groupEndpoints = new ArrayList<RespokeEndpoint>();
+                    groupEndpointArrays.put(groupName, groupEndpoints);
+
+                    // Start tracking the conversation with this group
+                    Conversation groupConversation = new Conversation(groupName);
+                    groupConversations.put(groupName, groupConversation);
+
                     group.getMembers(new RespokeGroup.GetGroupMembersCompletionListener() {
                         @Override
                         public void onSuccess(ArrayList<RespokeConnection> memberArray) {
-                            // Establish the connection and endpoint tracking arrays for this group
                             groupConnectionArrays.put(groupName, new ArrayList<RespokeConnection>(memberArray));
-
-                            ArrayList<RespokeEndpoint> groupEndpoints = new ArrayList<RespokeEndpoint>();
-                            groupEndpointArrays.put(groupName, groupEndpoints);
-
-                            // Start tracking the conversation with this group
-                            Conversation groupConversation = new Conversation(groupName);
-                            groupConversations.put(groupName, groupConversation);
 
                             // Evaluate each connection in the new group
                             for (RespokeConnection each : memberArray) {
@@ -252,7 +254,6 @@ public class ContactManager implements RespokeGroup.Listener, RespokeEndpoint.Li
                 });
             }
 
-
             // If this endpoint is not known in this specific group, remember it
             if (-1 == groupEndpoints.indexOf(parentEndpoint)) {
                 groupEndpoints.add(parentEndpoint);
@@ -265,7 +266,6 @@ public class ContactManager implements RespokeGroup.Listener, RespokeEndpoint.Li
                 intent.putExtra("groupID", sender.getGroupID());
                 LocalBroadcastManager.getInstance(context).sendBroadcast(intent);
             }
-
         }
     }
 

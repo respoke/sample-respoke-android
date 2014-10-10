@@ -203,19 +203,13 @@ public class ConnectActivity extends Activity implements RespokeClient.Listener,
     public void showError(final String message) {
         isConnecting = false;
 
-        // Update UI on main thread
-        runOnUiThread(new Runnable() {
-            @Override
-            public void run() {
-                Button connectButton = (Button)findViewById(R.id.button1);
-                ProgressBar progressCircle = (ProgressBar)findViewById(R.id.progress_circle);
-                TextView errorMessageView = (TextView)findViewById(R.id.error_message);
+        Button connectButton = (Button)findViewById(R.id.button1);
+        ProgressBar progressCircle = (ProgressBar)findViewById(R.id.progress_circle);
+        TextView errorMessageView = (TextView)findViewById(R.id.error_message);
 
-                progressCircle.setVisibility(View.INVISIBLE);
-                errorMessageView.setText(message);
-                connectButton.setText("Connect");
-            }
-        });
+        progressCircle.setVisibility(View.INVISIBLE);
+        errorMessageView.setText(message);
+        connectButton.setText("Connect");
     }
 
 
@@ -255,22 +249,16 @@ public class ConnectActivity extends Activity implements RespokeClient.Listener,
             public void onSuccess() {
                 isConnecting = false;
 
-                // Update UI on main thread
-                runOnUiThread(new Runnable() {
-                    @Override
-                    public void run() {
-                        Intent i = new Intent(ConnectActivity.this, GroupListActivity.class);
-                        startActivity(i);
+                Intent i = new Intent(ConnectActivity.this, GroupListActivity.class);
+                startActivity(i);
 
-                        Button connectButton = (Button)findViewById(R.id.button1);
-                        ProgressBar progressCircle = (ProgressBar)findViewById(R.id.progress_circle);
-                        TextView errorMessageView = (TextView)findViewById(R.id.error_message);
+                Button connectButton = (Button)findViewById(R.id.button1);
+                ProgressBar progressCircle = (ProgressBar)findViewById(R.id.progress_circle);
+                TextView errorMessageView = (TextView)findViewById(R.id.error_message);
 
-                        progressCircle.setVisibility(View.INVISIBLE);
-                        errorMessageView.setText("");
-                        connectButton.setText("Connect");
-                    }
-                });
+                progressCircle.setVisibility(View.INVISIBLE);
+                errorMessageView.setText("");
+                connectButton.setText("Connect");
             }
 
             @Override

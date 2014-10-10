@@ -23,6 +23,7 @@ import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.BaseAdapter;
 import android.widget.Button;
+import android.widget.EditText;
 import android.widget.ListView;
 import android.widget.ProgressBar;
 import android.widget.TextView;
@@ -127,10 +128,58 @@ public class GroupListActivity extends FragmentActivity implements AdapterView.O
         // automatically handle clicks on the Home/Up button, so long
         // as you specify a parent activity in AndroidManifest.xml.
         int id = item.getItemId();
-        /*if (id == R.id.action_join) {
-            Log.d(TAG, "Hi!");
+        if (id == R.id.action_join) {
+            final Dialog dialog = new Dialog(this);
+            dialog.setContentView(R.layout.dialog_join_group);
+            dialog.setTitle("Join a group");
+
+            Button dialogButton = (Button) dialog.findViewById(R.id.button1);
+            TextView errorText = (TextView) dialog.findViewById(R.id.errorText);
+            errorText.setText("");
+
+            // if button is clicked, close the custom dialog
+            dialogButton.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    Button connectButton = (Button)dialog.findViewById(R.id.button1);
+                    ProgressBar progressCircle = (ProgressBar)dialog.findViewById(R.id.progress_circle);
+                    EditText userInput = (EditText) dialog.findViewById(R.id.editTextDialogUserInput);
+                    String groupID = userInput.getText().toString();
+
+                    if (groupID.length() > 0) {
+                        TextView errorText = (TextView) dialog.findViewById(R.id.errorText);
+                        errorText.setText("");
+                        connectButton.setText("");
+                        progressCircle.setVisibility(View.VISIBLE);
+
+                        ContactManager.sharedInstance().joinGroup(groupID, new Respoke.TaskCompletionListener() {
+                            @Override
+                            public void onSuccess() {
+                                dialog.dismiss();
+                            }
+
+                            @Override
+                            public void onError(final String errorMessage) {
+                                Button connectButton = (Button) dialog.findViewById(R.id.button1);
+                                ProgressBar progressCircle = (ProgressBar) dialog.findViewById(R.id.progress_circle);
+                                TextView errorText = (TextView) dialog.findViewById(R.id.errorText);
+
+                                errorText.setText(errorMessage);
+                                connectButton.setText("Connect");
+                                progressCircle.setVisibility(View.INVISIBLE);
+                            }
+                        });
+                    } else {
+                        TextView errorText = (TextView) dialog.findViewById(R.id.errorText);
+                        errorText.setText("Group name may not be blank");
+                    }
+                }
+            });
+
+            dialog.show();
+
             return true;
-        }*/
+        }
         return super.onOptionsItemSelected(item);
     }
 
@@ -272,7 +321,7 @@ public class GroupListActivity extends FragmentActivity implements AdapterView.O
 
                 itemText.setText(group.getGroupID());
 
-                if (conversation.unreadCount == 0) {
+                if ((null == conversation) || (conversation.unreadCount == 0)) {
                     unreadCountText.setVisibility(View.INVISIBLE);
                 } else {
                     unreadCountText.setText(Integer.toString(conversation.unreadCount));
@@ -298,7 +347,7 @@ public class GroupListActivity extends FragmentActivity implements AdapterView.O
                     presenceText.setVisibility(View.INVISIBLE);
                 }
 
-                if (conversation.unreadCount == 0) {
+                if ((null == conversation) || (conversation.unreadCount == 0)) {
                     unreadCountText.setVisibility(View.INVISIBLE);
                 } else {
                     unreadCountText.setText(Integer.toString(conversation.unreadCount));
