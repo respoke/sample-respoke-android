@@ -86,4 +86,65 @@
         </LinearLayout>
     </FrameLayout>
 
+    <RelativeLayout
+        android:id="@+id/answer_view"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:background="@color/respoke_blue">
+
+        <RelativeLayout
+            android:layout_width="300dp"
+            android:layout_height="125dp"
+            android:layout_centerVertical="true"
+            android:layout_centerHorizontal="true"
+            android:background="@color/incoming_call_bg">
+
+            <TextView
+                android:id="@+id/incoming_call_text"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_centerHorizontal="true"
+                android:layout_marginTop="3dp"
+                android:text="@string/incoming_call"
+                android:textColor="@android:color/black"
+                android:textSize="17sp"/>
+
+            <TextView
+                android:id="@+id/caller_name_text"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_centerHorizontal="true"
+                android:layout_below="@+id/incoming_call_text"
+                android:layout_marginTop="10dp"
+                android:text="somebody"
+                android:textColor="@android:color/black"
+                android:textStyle="bold"
+                android:textSize="27sp"/>
+
+            <Button
+                android:layout_width="150dp"
+                android:layout_height="45dp"
+                android:layout_alignParentBottom="true"
+                android:layout_alignParentStart="true"
+                android:text="@string/answer"
+                android:textStyle="bold"
+                android:textColor="@color/respoke_blue"
+                android:background="@android:color/white"
+                android:onClick="answerCall"/>
+
+            <Button
+                android:layout_width="150dp"
+                android:layout_height="45dp"
+                android:layout_alignParentBottom="true"
+                android:layout_alignParentEnd="true"
+                android:text="@string/ignore"
+                android:textStyle="bold"
+                android:textColor="@android:color/white"
+                android:background="@color/button_bg"
+                android:onClick="ignoreCall"/>
+
+        </RelativeLayout>
+
+    </RelativeLayout>
+
 </FrameLayout>

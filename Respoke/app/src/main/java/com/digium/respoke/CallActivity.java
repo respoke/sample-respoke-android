@@ -24,10 +24,6 @@ public class CallActivity extends Activity implements RespokeCall.Listener {
     private RespokeEndpoint remoteEndpoint;
     private boolean audioMuted;
     private boolean videoMuted;
-    private ImageButton muteAudioButton;
-    private ImageButton muteVideoButton;
-    private TextView connectingTextView;
-    private ProgressBar progressCircle;
 
 
     @Override
@@ -36,11 +32,9 @@ public class CallActivity extends Activity implements RespokeCall.Listener {
 
         setContentView(R.layout.activity_call);
 
+        ImageButton muteVideoButton = (ImageButton) findViewById(R.id.mute_video_button);
+        View answerView = findViewById(R.id.answer_view);
         GLSurfaceView videoView = (GLSurfaceView) findViewById(R.id.videoview);
-        muteAudioButton = (ImageButton) findViewById(R.id.mute_audio_button);
-        muteVideoButton = (ImageButton) findViewById(R.id.mute_video_button);
-        connectingTextView = (TextView) findViewById(R.id.connecting_text_view);
-        progressCircle = (ProgressBar) findViewById(R.id.progress_circle);
 
         String remoteEndpointID = null;
         String callID = null;
@@ -69,12 +63,22 @@ public class CallActivity extends Activity implements RespokeCall.Listener {
                 remoteEndpoint = ContactManager.sharedInstance().sharedClient.getEndpoint(remoteEndpointID, true);
 
                 if (null == call) {
+                    answerView.setVisibility(View.INVISIBLE);
                     if (null != remoteEndpoint) {
                         call = remoteEndpoint.startCall(this, this, videoView, audioOnly);
                     }
                 } else {
+                    answerView.setVisibility(View.VISIBLE);
                     remoteEndpoint = call.endpoint;
-                    call.answer(this, this, videoView);
+                    TextView callerNameView = (TextView) findViewById(R.id.caller_name_text);
+
+                    if (null != remoteEndpoint) {
+                        callerNameView.setText(remoteEndpoint.getEndpointID());
+                    } else {
+                        callerNameView.setText("Unknown Caller");
+                    }
+
+                    call.attachVideoRenderer(videoView);
                 }
             }
         }
@@ -112,7 +116,9 @@ public class CallActivity extends Activity implements RespokeCall.Listener {
             videoView.onPause();
         }
 
-        call.pause();
+        if (null != call) {
+            call.pause();
+        }
     }
 
     @Override
@@ -124,26 +130,47 @@ public class CallActivity extends Activity implements RespokeCall.Listener {
             videoView.onResume();
         }
 
-        call.resume();
+        if (null != call) {
+            call.resume();
+        }
     }
 
 
     @Override
     public void onBackPressed() {
-        call.hangup(true);
+        if (null != call) {
+            call.hangup(true);
+        }
 
         super.onBackPressed();
     }
 
 
+    public void answerCall(View view) {
+        View answerView = findViewById(R.id.answer_view);
+
+        answerView.setVisibility(View.INVISIBLE);
+        call.answer(this, this);
+    }
+
+
+    public void ignoreCall(View view) {
+        hangup(view);
+    }
+
+
     public void hangup(View view) {
-        call.hangup(true);
+        if (null != call) {
+            call.hangup(true);
+        }
 
         finish();
     }
 
 
     public void muteAudio(View view) {
+        ImageButton muteAudioButton = (ImageButton) findViewById(R.id.mute_audio_button);
+
         audioMuted = !audioMuted;
         call.muteAudio(audioMuted);
 
@@ -160,6 +187,8 @@ public class CallActivity extends Activity implements RespokeCall.Listener {
 
 
     public void muteVideo(View view) {
+        ImageButton muteVideoButton = (ImageButton) findViewById(R.id.mute_video_button);
+
         videoMuted = !videoMuted;
         call.muteVideo(videoMuted);
 
@@ -223,6 +252,9 @@ public class CallActivity extends Activity implements RespokeCall.Listener {
         runOnUiThread(new Runnable() {
             @Override
             public void run() {
+                TextView connectingTextView = (TextView) findViewById(R.id.connecting_text_view);
+                ProgressBar progressCircle = (ProgressBar) findViewById(R.id.progress_circle);
+
                 connectingTextView.setVisibility(View.INVISIBLE);
                 progressCircle.setVisibility(View.INVISIBLE);
             }
