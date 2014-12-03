@@ -28,7 +28,7 @@ https://www.vmware.com/products/fusion/features.html
 http://www.ubuntu.com/download/desktop
 
 
-3) Create a new virtual machine using the Ubuntu image. Give it at least 20GB of space to work with. I choose not to let it share home directories with my Mac user so it was easier to clean up afterwards.
+3) Create a new virtual machine using the Ubuntu image. Give it at least 30GB of space to work with. I choose not to let it share home directories with my Mac user so it was easier to clean up afterwards.
 
 
 4) Login to the new Ubuntu virtual machine desktop and open a terminal (Ctrl-Alt-T)
@@ -72,7 +72,7 @@ This took me ~4 hours to finish. Eventually it will fail, complaining about miss
 
 A script now exists that will fortunately install the remaining dependencies for us, so run it:
 
-trunk/build/install-build-deps-android.sh
+src/build/install-build-deps-android.sh
 
 
 11) Pull WebRTC source part 2. It should actually finish successfully this time!
