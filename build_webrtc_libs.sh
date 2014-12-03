@@ -74,42 +74,12 @@ pull_depot_tools() {
   cd $WORKING_DIR
 }
 
-# Update/Get the webrtc code base
-pull_webrtc() {
-  WORKING_DIR=`pwd`
-  
-  # If no directory where webrtc root should be...
-  create_directory_if_not_found $WEBRTC_ROOT
-    cd $WEBRTC_ROOT
-
-    # Ensure our target os is correct building android
-    echo Configuring gclient for Android build
-  gclient config http://webrtc.googlecode.com/svn/trunk
-  echo "target_os = ['unix', 'android']" >> .gclient
-
-    # Get latest webrtc source
-  echo Pull down the latest from the webrtc repo
-  echo this can take a while
-  if [ -z $1 ]
-    then
-        echo "gclient sync with newest"
-        gclient sync 
-    else
-      trunkA="trunk@"
-        echo "gclient sync with r$1"
-        gclient sync -r $trunkA$1 
-    fi
-
-    # Navigate back
-  cd $WORKING_DIR
-}
-
 # Setup our defines for the build
 prepare_gyp_defines() {
     # Setup deps for android and configure environment
     echo Setting up build environment for Android
-  $WEBRTC_ROOT/trunk/build/install-build-deps-android.sh
-  source $WEBRTC_ROOT/trunk/build/android/envsetup.sh
+  $WEBRTC_ROOT/src/build/install-build-deps-android.sh
+  source $WEBRTC_ROOT/src/build/android/envsetup.sh
 
 
     # Check to see if the user wants to set their own gyp defines
@@ -132,8 +102,8 @@ prepare_gyp_defines() {
 prepare_build() {
   WORKING_DIR=`pwd`
 
-    echo Change directory into webrtc trunk
-    cd "$WEBRTC_ROOT/trunk"
+    echo Change directory into webrtc src
+    cd "$WEBRTC_ROOT/src"
 
     echo cleaning old build
     rm -rf out
@@ -150,7 +120,7 @@ prepare_build() {
 # Builds the apprtc demo
 execute_build() {
   WORKING_DIR=`pwd`
-  cd "$WEBRTC_ROOT/trunk"
+  cd "$WEBRTC_ROOT/src"
 
 #  PEERCONNECTION_BUILD="$WEBRTC_ROOT/libjingle_peerconnection_builds"
 #  create_directory_if_not_found "$PEERCONNECTION_BUILD"
@@ -158,7 +128,7 @@ execute_build() {
 #  create_directory_if_not_found "$DEBUG_DIR"
   ARCHITECTURE="armeabi-v7a"
 
-  DIRECTORY="$WEBRTC_ROOT/trunk/talk/examples/android/libs/$ARCHITECTURE"
+  DIRECTORY="$WEBRTC_ROOT/src/talk/examples/android/libs/$ARCHITECTURE"
 
   echo Build AppRTCDemo in Release mode
   ninja -C out/Release/ AppRTCDemo
@@ -174,10 +144,10 @@ execute_build() {
   zip -r libjingle_peerconnection_so.jar lib
   rm -rf lib
   
-  cd "$WEBRTC_ROOT/trunk"
+  cd "$WEBRTC_ROOT/src"
 
-  echo "Copy $WEBRTC_ROOT/trunk/talk/examples/android/libs/libjingle_peerconnection.jar to $RELEASE_DIR/libjingle_peerconnection.jar"
-  cp -p "$WEBRTC_ROOT/trunk/talk/examples/android/libs/libjingle_peerconnection.jar" "$RELEASE_DIR/libjingle_peerconnection.jar"
+  echo "Copy $WEBRTC_ROOT/src/talk/examples/android/libs/libjingle_peerconnection.jar to $RELEASE_DIR/libjingle_peerconnection.jar"
+  cp -p "$WEBRTC_ROOT/src/talk/examples/android/libs/libjingle_peerconnection.jar" "$RELEASE_DIR/libjingle_peerconnection.jar"
 
   cd $WORKING_DIR
 
@@ -189,8 +159,8 @@ execute_build() {
 execute_debug_build() {
   WORKING_DIR=`pwd`
 
-  echo Change directory into webrtc trunk
-  cd "$WEBRTC_ROOT/trunk"
+  echo Change directory into webrtc src
+  cd "$WEBRTC_ROOT/src"
 
   echo Build AppRTCDemo in Debug mode
   ninja -C out/Debug/ AppRTCDemo
@@ -201,14 +171,14 @@ execute_debug_build() {
   create_directory_if_not_found "$DEBUG_DIR"
   ARCHITECTURE="armeabi-v7a"
 
-  DIRECTORY="$WEBRTC_ROOT/trunk/talk/examples/android/libs/$ARCHITECTURE"
+  DIRECTORY="$WEBRTC_ROOT/src/talk/examples/android/libs/$ARCHITECTURE"
 
   create_directory_if_not_found "$DEBUG_DIR/$ARCHITECTURE"
   echo "Copy $DIRECTORY/libjingle_peerconnection_so.so to $DEBUG_DIR/$ARCHITECTURE/libjingle_peerconnection_so.so"
   cp -p "$DIRECTORY/libjingle_peerconnection_so.so" "$DEBUG_DIR/$ARCHITECTURE/libjingle_peerconnection_so.so"
 
-  echo "Copy $WEBRTC_ROOT/trunk/talk/examples/android/libs/libjingle_peerconnection.jar to $DEBUG_DIR/libjingle_peerconnection.jar"
-  cp -p "$WEBRTC_ROOT/trunk/talk/examples/android/libs/libjingle_peerconnection.jar" "$DEBUG_DIR/libjingle_peerconnection.jar"
+  echo "Copy $WEBRTC_ROOT/src/talk/examples/android/libs/libjingle_peerconnection.jar to $DEBUG_DIR/libjingle_peerconnection.jar"
+  cp -p "$WEBRTC_ROOT/src/talk/examples/android/libs/libjingle_peerconnection.jar" "$DEBUG_DIR/libjingle_peerconnection.jar"
 
   cd $WORKING_DIR
     echo "Debug build for apprtc complete for revision $REVISION_NUM"
@@ -216,7 +186,7 @@ execute_debug_build() {
 
 # Gets the webrtc revision
 get_webrtc_revision() {
-    svn info "$WEBRTC_ROOT/trunk" | awk '{ if ($1 ~ /Revision/) { print $2 } }'
+    svn info "$WEBRTC_ROOT/src" | awk '{ if ($1 ~ /Revision/) { print $2 } }'
 }
 
 # Updates webrtc and builds apprtc

@@ -1,4 +1,4 @@
-WEBRTC_REVISION=7369
+WEBRTC_REVISION=7780
 
 echo "--- Pulling WebRTC source code for revision $WEBRTC_REVISION"
 gclient sync --force -r $WEBRTC_REVISION
