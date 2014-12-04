@@ -51,7 +51,7 @@ public class ConnectActivity extends Activity implements RespokeClient.Listener,
      * Substitute you own sender ID here. This is the project number you got
      * from the API Console, as described in "Getting Started."
      */
-    String SENDER_ID = "Your-Sender-ID";
+    String SENDER_ID = "540194358645";
 
     GoogleCloudMessaging gcm;
     AtomicInteger msgId = new AtomicInteger();
@@ -95,18 +95,19 @@ public class ConnectActivity extends Activity implements RespokeClient.Listener,
 
         // Check device for Play Services APK. If check succeeds, proceed with
         //  GCM registration.
-        /*if (checkPlayServices()) {
+        if (checkPlayServices()) {
             gcm = GoogleCloudMessaging.getInstance(this);
             regid = getRegistrationId(context);
 
             if (regid.isEmpty()) {
                 registerInBackground();
+            } else {
+                // We already have a token, so just send it to the Respoke push server
+                Respoke.sharedInstance().registerPushToken(regid);
             }
         } else {
             Log.i(TAG, "No valid Google Play Services APK found.");
-        }*/
-
-        Respoke.sharedInstance().registerPushToken("something!");
+        }
     }
 
     // You need to do the Play Services APK check here too.
