@@ -46,6 +46,7 @@ public class ConnectActivity extends Activity implements RespokeClient.Listener,
 
     private boolean isConnecting = false;
     private boolean brokeredAuthOn = false;
+    private static boolean registered = false;
 
     /**
      * Substitute you own sender ID here. This is the project number you got
@@ -93,20 +94,24 @@ public class ConnectActivity extends Activity implements RespokeClient.Listener,
 
         context = getApplicationContext();
 
-        // Check device for Play Services APK. If check succeeds, proceed with
-        //  GCM registration.
-        if (checkPlayServices()) {
-            gcm = GoogleCloudMessaging.getInstance(this);
-            regid = getRegistrationId(context);
+        // Only register for push notifications once
+        if (!registered) {
+            // Check device for Play Services APK. If check succeeds, proceed with
+            //  GCM registration.
+            if (checkPlayServices()) {
+                gcm = GoogleCloudMessaging.getInstance(this);
+                regid = getRegistrationId(context);
 
-            if (regid.isEmpty()) {
-                registerInBackground();
+                if (regid.isEmpty()) {
+                    registerInBackground();
+                } else {
+                    // We already have a token, so just send it to the Respoke push server
+                    Respoke.sharedInstance().registerPushToken(regid);
+                    registered = true;
+                }
             } else {
-                // We already have a token, so just send it to the Respoke push server
-                Respoke.sharedInstance().registerPushToken(regid);
+                Log.i(TAG, "No valid Google Play Services APK found.");
             }
-        } else {
-            Log.i(TAG, "No valid Google Play Services APK found.");
         }
     }
 
@@ -258,6 +263,7 @@ public class ConnectActivity extends Activity implements RespokeClient.Listener,
                     // The request to your server should be authenticated if your app
                     // is using accounts.
                     Respoke.sharedInstance().registerPushToken(regid);
+                    registered = true;
 
                     // Persist the regID - no need to register again.
                     storeRegistrationId(context, regid);
