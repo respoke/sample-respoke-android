@@ -1,0 +1,3 @@
+[submodule "Respoke/respokeSDK"]
+	path = Respoke/respokeSDK
+	url = https://rcrabtree@stash.digium.com/stash/scm/scl/respoke-sdk-android.git
