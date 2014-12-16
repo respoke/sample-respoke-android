@@ -1,9 +1,16 @@
 respoke-android
 ===============
 
+This repository uses submodules! Make sure to clone this repo using the --recursive flag in order to automatically clone the SDK submodule as well.
+
+
+```
+git clone --recursive https://<USER_NAME>@stash.digium.com/stash/scm/sa/respoke-android.git
+```
+
 Prerequisites:
 
-Android Studio (I used v0.8.9)
+Android Studio (I used v1.0.1)
 Android NDK (I used r10b, Mac 64-bit)
 
 https://developer.android.com/tools/sdk/ndk/index.html
