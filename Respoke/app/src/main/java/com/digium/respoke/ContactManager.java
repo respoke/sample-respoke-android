@@ -66,11 +66,16 @@ public class ContactManager implements RespokeGroup.Listener, RespokeEndpoint.Li
 
     public void joinGroup(final String groupName, final Respoke.TaskCompletionListener completionListener) {
         if (null != sharedClient) {
-            sharedClient.joinGroup(groupName, new RespokeClient.JoinGroupCompletionDelegate() {
+            ArrayList<String> groupsToJoin = new ArrayList<String>();
+            groupsToJoin.add(groupName);
+
+            sharedClient.joinGroup(groupsToJoin, new RespokeClient.JoinGroupCompletionDelegate() {
                 @Override
-                public void onSuccess(final RespokeGroup group) {
+                public void onSuccess(final ArrayList<RespokeGroup> groupList) {
                     Log.d(TAG, "Group joined, fetching member list");
 
+                    // This demo app will only ever join one group at a time, so just grab the first entry
+                    final RespokeGroup group = groupList.get(0);
                     group.setListener(ContactManager.this);
                     groups.add(group);
 
