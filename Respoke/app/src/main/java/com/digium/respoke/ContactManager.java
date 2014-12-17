@@ -94,15 +94,7 @@ public class ContactManager implements RespokeGroup.Listener, RespokeEndpoint.Li
                                 // Find the endpoint to which the connection belongs
                                 RespokeEndpoint parentEndpoint = each.getEndpoint();
 
-                                // If this endpoint is not known in any group, remember it
-                                if (-1 == allKnownEndpoints.indexOf(parentEndpoint)) {
-                                    allKnownEndpoints.add(parentEndpoint);
-                                    parentEndpoint.setListener(ContactManager.this);
-
-                                    // Start tracking the conversation with this endpoint
-                                    Conversation conversation = new Conversation(parentEndpoint.getEndpointID());
-                                    conversations.put(parentEndpoint.getEndpointID(), conversation);
-                                }
+                                trackEndpoint(parentEndpoint);
 
                                 // If this endpoint is not known in this specific group, remember it
                                 if (-1 == groupEndpoints.indexOf(parentEndpoint)) {
@@ -209,6 +201,19 @@ public class ContactManager implements RespokeGroup.Listener, RespokeEndpoint.Li
     }
 
 
+    public void trackEndpoint(RespokeEndpoint newEndpoint) {
+        // If this endpoint is not known in any group, remember it
+        if (-1 == allKnownEndpoints.indexOf(newEndpoint)) {
+            allKnownEndpoints.add(newEndpoint);
+            newEndpoint.setListener(ContactManager.this);
+
+            // Start tracking the conversation with this endpoint
+            Conversation conversation = new Conversation(newEndpoint.getEndpointID());
+            conversations.put(newEndpoint.getEndpointID(), conversation);
+        }
+    }
+
+
     // RespokeGroupListener methods
 
 
@@ -229,12 +234,8 @@ public class ContactManager implements RespokeGroup.Listener, RespokeEndpoint.Li
             // If this endpoint is not known anywhere, remember it
             if (-1 == allKnownEndpoints.indexOf(parentEndpoint)) {
                 Log.d(TAG, "Joined: " + parentEndpoint.getEndpointID());
-                allKnownEndpoints.add(parentEndpoint);
-                parentEndpoint.setListener(this);
 
-                // Start tracking the conversation with this endpoint
-                Conversation conversation = new Conversation(parentEndpoint.getEndpointID());
-                conversations.put(parentEndpoint.getEndpointID(), conversation);
+                trackEndpoint(parentEndpoint);
 
                 // Notify any UI listeners that a new endpoint has been discovered
                 Intent intent = new Intent(ENDPOINT_DISCOVERED);
@@ -340,7 +341,7 @@ public class ContactManager implements RespokeGroup.Listener, RespokeEndpoint.Li
 
     public void onGroupMessage(String message, RespokeEndpoint endpoint, RespokeGroup sender) {
         Conversation conversation = groupConversations.get(sender.getGroupID());
-        conversation.addMessage(message, endpoint.getEndpointID());
+        conversation.addMessage(message, endpoint.getEndpointID(), false);
         conversation.unreadCount++;
 
         // Notify any UI listeners that a message has been received from a remote endpoint
@@ -355,7 +356,7 @@ public class ContactManager implements RespokeGroup.Listener, RespokeEndpoint.Li
 
     public void onMessage(String message, RespokeEndpoint sender) {
         Conversation conversation = conversations.get(sender.getEndpointID());
-        conversation.addMessage(message, sender.getEndpointID());
+        conversation.addMessage(message, sender.getEndpointID(), false);
         conversation.unreadCount++;
 
         // Notify any UI listeners that a message has been received from a remote endpoint

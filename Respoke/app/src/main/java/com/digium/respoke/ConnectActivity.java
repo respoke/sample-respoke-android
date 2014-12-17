@@ -25,6 +25,8 @@ import android.widget.ToggleButton;
 import com.digium.respokesdk.Respoke;
 import com.digium.respokesdk.RespokeCall;
 import com.digium.respokesdk.RespokeClient;
+import com.digium.respokesdk.RespokeDirectConnection;
+import com.digium.respokesdk.RespokeEndpoint;
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.GooglePlayServicesUtil;
 import com.google.android.gms.gcm.GoogleCloudMessaging;
@@ -470,6 +472,11 @@ public class ConnectActivity extends Activity implements RespokeClient.Listener,
 
 
     public void onCall(RespokeClient sender, RespokeCall call) {
+
+    }
+
+
+    public void onIncomingDirectConnection(RespokeDirectConnection directConnection, RespokeEndpoint endpoint) {
 
     }
 

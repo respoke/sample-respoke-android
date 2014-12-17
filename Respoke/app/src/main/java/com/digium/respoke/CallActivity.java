@@ -1,6 +1,7 @@
 package com.digium.respoke;
 
 import com.digium.respokesdk.RespokeCall;
+import com.digium.respokesdk.RespokeDirectConnection;
 import com.digium.respokesdk.RespokeEndpoint;
 
 import android.app.Activity;
@@ -262,4 +263,7 @@ public class CallActivity extends Activity implements RespokeCall.Listener {
     }
 
 
+    public void directConnectionAvailable(RespokeDirectConnection directConnection, RespokeEndpoint endpoint) {
+
+    }
 }

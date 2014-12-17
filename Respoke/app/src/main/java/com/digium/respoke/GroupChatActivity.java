@@ -166,7 +166,7 @@ public class GroupChatActivity extends Activity {
 
         if (message.length() > 0) {
             chatText.setText("");
-            conversation.addMessage(message, ContactManager.sharedInstance().username);
+            conversation.addMessage(message, ContactManager.sharedInstance().username, false);
 
             // Tell the ListView to reconfigure itself based on the new data
             listAdapter.notifyDataSetChanged();

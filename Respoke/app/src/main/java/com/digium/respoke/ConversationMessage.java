@@ -7,5 +7,6 @@ public class ConversationMessage {
 
     public String message;
     public String senderEndpoint;
+    public boolean direct;
 
 }

@@ -18,10 +18,11 @@ public class Conversation {
     }
 
 
-    public void addMessage(String message, String sender) {
+    public void addMessage(String message, String sender, boolean directMessage) {
         ConversationMessage newMessage = new ConversationMessage();
         newMessage.message = message;
         newMessage.senderEndpoint = sender;
+        newMessage.direct = directMessage;
         messages.add(newMessage);
     }
 

@@ -3,6 +3,7 @@
     <string-array name="call_types">
         <item>Video Call</item>
         <item>Audio Only</item>
+        <item>Direct Connection</item>
         <item>Cancel</item>
     </string-array>
 

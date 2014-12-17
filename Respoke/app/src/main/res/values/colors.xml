@@ -8,5 +8,6 @@
     <color name="remote_message_color">#cccccc</color>
     <color name="black_overlay">#66000000</color>
     <color name="incoming_call_bg">#b2ffffff</color>
+    <color name="incoming_connection_bg">#555555</color>
 
 </resources>

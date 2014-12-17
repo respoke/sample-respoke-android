@@ -1,51 +1,149 @@
-<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:paddingLeft="@dimen/activity_horizontal_margin"
-    android:paddingRight="@dimen/activity_horizontal_margin"
-    android:paddingTop="@dimen/activity_vertical_margin"
-    android:paddingBottom="@dimen/activity_vertical_margin"
     tools:context="com.digium.respoke.ChatActivity">
 
-    <ListView
-        android:id="@+id/list"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:listSelector="@drawable/listview_selector"
-        android:divider="@null"
-        android:dividerHeight="0dp"
-        android:layout_marginBottom="50dp">
-    </ListView>
-
     <RelativeLayout
-        android:id="@+id/form"
-        android:layout_width="fill_parent"
-        android:layout_height="wrap_content"
-        android:layout_alignParentBottom="true"
-        android:layout_alignParentLeft="true"
-        android:orientation="vertical" >
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:paddingLeft="@dimen/activity_horizontal_margin"
+        android:paddingRight="@dimen/activity_horizontal_margin"
+        android:paddingTop="@dimen/activity_vertical_margin"
+        android:paddingBottom="@dimen/activity_vertical_margin">
 
-        <EditText
-            android:layout_width="wrap_content"
+        <ListView
+            android:id="@+id/list"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:inputType="textMultiLine"
-            android:ems="10"
-            android:id="@+id/chatText"
-            android:hint="@string/message"
+            android:listSelector="@drawable/listview_selector"
+            android:divider="@null"
+            android:dividerHeight="0dp"
+            android:layout_marginBottom="50dp">
+        </ListView>
+
+        <RelativeLayout
+            android:id="@+id/form"
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
             android:layout_alignParentBottom="true"
             android:layout_alignParentLeft="true"
-            android:layout_alignParentStart="true"
-            android:layout_toLeftOf="@+id/buttonSend" />
+            android:orientation="vertical" >
 
-        <Button
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="Send"
-            android:id="@+id/buttonSend"
-            android:layout_alignBottom="@+id/chatText"
-            android:layout_alignParentRight="true"
-            android:layout_alignParentEnd="true" />
+            <EditText
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:inputType="textMultiLine"
+                android:ems="10"
+                android:id="@+id/chatText"
+                android:hint="@string/message"
+                android:layout_alignParentBottom="true"
+                android:layout_alignParentLeft="true"
+                android:layout_alignParentStart="true"
+                android:layout_toLeftOf="@+id/buttonSend" />
+
+            <Button
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Send"
+                android:id="@+id/buttonSend"
+                android:layout_alignBottom="@+id/chatText"
+                android:layout_alignParentRight="true"
+                android:layout_alignParentEnd="true" />
+        </RelativeLayout>
     </RelativeLayout>
 
-</RelativeLayout>
+
+    <FrameLayout android:layout_width="match_parent"
+        android:id="@+id/connecting_view"
+        android:layout_height="match_parent"
+        android:fitsSystemWindows="true"
+        android:visibility="invisible"
+        android:background="@color/incoming_connection_bg">
+
+        <LinearLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_horizontal|center_vertical">
+
+            <TextView
+                android:id="@+id/connecting_text_view"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/connecting"
+                android:textColor="@android:color/white"
+                android:textSize="22sp"/>
+
+            <ProgressBar
+                android:indeterminate="true"
+                android:id="@+id/progress_circle"
+                style="?android:attr/progressBarStyle"
+                android:layout_height="25dp"
+                android:layout_width="wrap_content"
+                android:visibility="visible"/>
+        </LinearLayout>
+    </FrameLayout>
+
+    <RelativeLayout
+        android:id="@+id/answer_view"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:visibility="invisible"
+        android:background="@color/incoming_connection_bg">
+
+        <RelativeLayout
+            android:layout_width="300dp"
+            android:layout_height="125dp"
+            android:layout_centerVertical="true"
+            android:layout_centerHorizontal="true"
+            android:background="@color/incoming_call_bg">
+
+            <TextView
+                android:id="@+id/incoming_call_text"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_centerHorizontal="true"
+                android:layout_marginTop="3dp"
+                android:text="@string/incoming_connection"
+                android:textColor="@android:color/black"
+                android:textSize="17sp"/>
+
+            <TextView
+                android:id="@+id/caller_name_text"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_centerHorizontal="true"
+                android:layout_below="@+id/incoming_call_text"
+                android:layout_marginTop="10dp"
+                android:text="somebody"
+                android:textColor="@android:color/black"
+                android:textStyle="bold"
+                android:textSize="27sp"/>
+
+            <Button
+                android:layout_width="150dp"
+                android:layout_height="45dp"
+                android:layout_alignParentBottom="true"
+                android:layout_alignParentStart="true"
+                android:text="@string/answer"
+                android:textStyle="bold"
+                android:textColor="@color/respoke_blue"
+                android:background="@android:color/white"
+                android:onClick="acceptConnection"/>
+
+            <Button
+                android:layout_width="150dp"
+                android:layout_height="45dp"
+                android:layout_alignParentBottom="true"
+                android:layout_alignParentEnd="true"
+                android:text="@string/ignore"
+                android:textStyle="bold"
+                android:textColor="@android:color/white"
+                android:background="@color/button_bg"
+                android:onClick="ignoreConnection"/>
+
+        </RelativeLayout>
+
+    </RelativeLayout>
+
+</FrameLayout>

@@ -31,6 +31,7 @@ import android.widget.TextView;
 import com.digium.respokesdk.Respoke;
 import com.digium.respokesdk.RespokeCall;
 import com.digium.respokesdk.RespokeClient;
+import com.digium.respokesdk.RespokeDirectConnection;
 import com.digium.respokesdk.RespokeEndpoint;
 import com.digium.respokesdk.RespokeGroup;
 
@@ -512,6 +513,16 @@ public class GroupListActivity extends FragmentActivity implements AdapterView.O
         Intent i = new Intent(this, CallActivity.class);
         i.putExtra("callID", call.getSessionID());
         i.putExtra("audioOnly", call.audioOnly);
+        startActivity(i);
+    }
+
+
+    public void onIncomingDirectConnection(RespokeDirectConnection directConnection, RespokeEndpoint endpoint) {
+        // Make the contact manager aware of this endpoint in case it is not a member of a group this client has joined
+        ContactManager.sharedInstance().trackEndpoint(endpoint);
+
+        Intent i = new Intent(this, ChatActivity.class);
+        i.putExtra("endpointID", endpoint.getEndpointID());
         startActivity(i);
     }
 

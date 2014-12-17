@@ -17,4 +17,14 @@
         android:layout_marginRight="40dp"
         android:layout_marginTop="10dp"/>
 
+    <ImageView
+        android:id="@+id/lockImage"
+        android:visibility="invisible"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignEnd="@+id/textView1"
+        android:src="@drawable/lock"
+        android:layout_marginEnd="-25dp"
+        android:layout_marginTop="10dp"/>
+
 </RelativeLayout>

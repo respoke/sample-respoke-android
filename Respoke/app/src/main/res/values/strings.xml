@@ -25,6 +25,7 @@
     <string name="group_id">Group ID</string>
     <string name="join_a_group">Join A Group:</string>
     <string name="incoming_call">Incoming Call</string>
+    <string name="incoming_connection">Incoming Direct Connection</string>
     <string name="answer">Answer</string>
     <string name="ignore">Ignore</string>
 
