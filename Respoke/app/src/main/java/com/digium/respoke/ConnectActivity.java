@@ -370,7 +370,7 @@ public class ConnectActivity extends Activity implements RespokeClient.Listener,
                         }
                     });
                 } else {
-                    String appID = "2b446810-6d92-4fa4-826a-2eabced82d60";
+                    String appID = "57ac5f3a-0513-40b5-ba42-b80939e69436";
 
                     ContactManager.sharedInstance().sharedClient.connect(endpointID, appID, true, null, this.getApplicationContext(), new Respoke.TaskCompletionListener() {
                         @Override

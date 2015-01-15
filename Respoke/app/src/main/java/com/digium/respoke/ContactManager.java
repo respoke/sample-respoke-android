@@ -12,6 +12,7 @@ import com.digium.respokesdk.RespokeEndpoint;
 import com.digium.respokesdk.RespokeGroup;
 
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -359,7 +360,7 @@ public class ContactManager implements RespokeGroup.Listener, RespokeEndpoint.Li
     // RespokeEndpointListener methods
 
 
-    public void onMessage(String message, RespokeEndpoint sender) {
+    public void onMessage(String message, Date timestamp, RespokeEndpoint sender) {
         Conversation conversation = conversations.get(sender.getEndpointID());
         conversation.addMessage(message, sender.getEndpointID(), false);
         conversation.unreadCount++;
