@@ -10,6 +10,7 @@ import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.IntentFilter;
+import android.content.SharedPreferences;
 import android.graphics.drawable.ColorDrawable;
 import android.os.Bundle;
 import android.support.v4.app.FragmentActivity;
@@ -39,6 +40,8 @@ import java.lang.ref.WeakReference;
 public class ChatActivity extends FragmentActivity implements RespokeDirectConnection.Listener, RespokeCall.Listener {
 
     private final static String TAG = "ChatActivity";
+    private final static String ENDPOINT_ID_KEY = "endpointID";
+    private final static String DIRECT_CONNECTION_KEY = "directConnection";
     public Conversation conversation;
     private ListDataAdapter listAdapter;
     private RespokeEndpoint remoteEndpoint;
@@ -76,13 +79,18 @@ public class ChatActivity extends FragmentActivity implements RespokeDirectConne
 
         // Check whether we're recreating a previously destroyed instance
         if (savedInstanceState != null) {
-            remoteEndpointID = savedInstanceState.getString("endpointID");
-            shouldStartDirectConnection = savedInstanceState.getBoolean("directConnection", false);
+            remoteEndpointID = savedInstanceState.getString(ENDPOINT_ID_KEY);
+            shouldStartDirectConnection = savedInstanceState.getBoolean(DIRECT_CONNECTION_KEY, false);
         } else {
             Bundle extras = getIntent().getExtras();
             if (extras != null) {
-                remoteEndpointID = extras.getString("endpointID");
-                shouldStartDirectConnection = extras.getBoolean("directConnection", false);
+                remoteEndpointID = extras.getString(ENDPOINT_ID_KEY);
+                shouldStartDirectConnection = extras.getBoolean(DIRECT_CONNECTION_KEY, false);
+            } else {
+                // The activity must have been destroyed while it was hidden to save memory. Use the most recent persistent data.
+                SharedPreferences prefs = getSharedPreferences(ConnectActivity.RESPOKE_SETTINGS, 0);
+                remoteEndpointID = prefs.getString(ENDPOINT_ID_KEY, "");
+                shouldStartDirectConnection = prefs.getBoolean(DIRECT_CONNECTION_KEY, false);
             }
         }
 
@@ -139,14 +147,16 @@ public class ChatActivity extends FragmentActivity implements RespokeDirectConne
 
     @Override
     public void onSaveInstanceState(Bundle savedInstanceState) {
-        savedInstanceState.putString("endpointID", remoteEndpoint.getEndpointID());
-
-        if (null != directConnection) {
-            savedInstanceState.putBoolean("directConnection", true);
-        }
-
         // Always call the superclass so it can save the view hierarchy state
         super.onSaveInstanceState(savedInstanceState);
+
+        if (null != remoteEndpoint) {
+            savedInstanceState.putString(ENDPOINT_ID_KEY, remoteEndpoint.getEndpointID());
+        }
+
+        if (null != directConnection) {
+            savedInstanceState.putBoolean(DIRECT_CONNECTION_KEY, true);
+        }
     }
 
 
@@ -201,6 +211,17 @@ public class ChatActivity extends FragmentActivity implements RespokeDirectConne
         super.onPause();
 
         LocalBroadcastManager.getInstance(this).unregisterReceiver(contactDataInvalidatedReceiver);
+
+        // Save key information in case this activity is killed while it is not visible
+        SharedPreferences prefs = getSharedPreferences(ConnectActivity.RESPOKE_SETTINGS, 0);
+        SharedPreferences.Editor editor = prefs.edit();
+        if (null != remoteEndpoint) {
+            editor.putString(ENDPOINT_ID_KEY, remoteEndpoint.getEndpointID()).apply();
+        }
+
+        if (null != directConnection) {
+            editor.putBoolean(DIRECT_CONNECTION_KEY, true);
+        }
     }
 
 

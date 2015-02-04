@@ -5,6 +5,7 @@ import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
+import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.support.v4.content.LocalBroadcastManager;
 import android.util.Log;
@@ -28,6 +29,7 @@ import java.util.ArrayList;
 public class GroupActivity extends Activity implements AdapterView.OnItemClickListener {
 
     private final static String TAG = "GroupActivity";
+    private final static String GROUP_ID_KEY = "groupID";
     private RespokeGroup group;
     private ListDataAdapter listAdapter;
     private boolean leaving;
@@ -42,11 +44,15 @@ public class GroupActivity extends Activity implements AdapterView.OnItemClickLi
 
         // Check whether we're recreating a previously destroyed instance
         if (savedInstanceState != null) {
-            groupID = savedInstanceState.getString("groupID");
+            groupID = savedInstanceState.getString(GROUP_ID_KEY);
         } else {
             Bundle extras = getIntent().getExtras();
             if (extras != null) {
-                groupID = extras.getString("groupID");
+                groupID = extras.getString(GROUP_ID_KEY);
+            } else {
+                // The activity must have been destroyed while it was hidden to save memory. Use the most recent persistent data.
+                SharedPreferences prefs = getSharedPreferences(ConnectActivity.RESPOKE_SETTINGS, 0);
+                groupID = prefs.getString(GROUP_ID_KEY, "");
             }
         }
 
@@ -70,10 +76,10 @@ public class GroupActivity extends Activity implements AdapterView.OnItemClickLi
 
     @Override
     public void onSaveInstanceState(Bundle savedInstanceState) {
-        savedInstanceState.putString("groupID", group.getGroupID());
-
         // Always call the superclass so it can save the view hierarchy state
         super.onSaveInstanceState(savedInstanceState);
+
+        savedInstanceState.putString(GROUP_ID_KEY, group.getGroupID());
     }
 
 
@@ -103,6 +109,13 @@ public class GroupActivity extends Activity implements AdapterView.OnItemClickLi
         super.onPause();
         LocalBroadcastManager.getInstance(this).unregisterReceiver(contactDataChangedReceiver);
         LocalBroadcastManager.getInstance(this).unregisterReceiver(contactDataInvalidatedReceiver);
+
+        // Save key information in case this activity is killed while it is not visible
+        SharedPreferences prefs = getSharedPreferences(ConnectActivity.RESPOKE_SETTINGS, 0);
+        SharedPreferences.Editor editor = prefs.edit();
+        if (null != group) {
+            editor.putString(GROUP_ID_KEY, group.getGroupID()).apply();
+        }
     }
 
 
@@ -189,7 +202,15 @@ public class GroupActivity extends Activity implements AdapterView.OnItemClickLi
             if (leaving) {
                 return 0;
             } else {
-                return ContactManager.sharedInstance().groupEndpointArrays.get(group.getGroupID()).size() + 3;
+                Integer memberCount = 3;
+                if (null != group) {
+                    ArrayList<RespokeEndpoint> members = ContactManager.sharedInstance().groupEndpointArrays.get(group.getGroupID());
+                    if (null != members) {
+                        memberCount += members.size();
+                    }
+                }
+
+                return memberCount;
             }
         }
 
@@ -257,23 +278,31 @@ public class GroupActivity extends Activity implements AdapterView.OnItemClickLi
                 return v;
             } else {
                 RespokeEndpoint endpoint = (RespokeEndpoint) item;
-                Conversation conversation = ContactManager.sharedInstance().conversations.get(endpoint.getEndpointID());
+                Conversation conversation = null;
+                if (null != endpoint) {
+                    conversation = ContactManager.sharedInstance().conversations.get(endpoint.getEndpointID());
+                }
 
                 View v = LayoutInflater.from(parent.getContext()).inflate( R.layout.list_row_endpoint, parent, false );
                 TextView endpointText = (TextView)v.findViewById( R.id.textView1 );
                 TextView presenceText = (TextView)v.findViewById( R.id.textView2 );
                 TextView unreadCountText = (TextView)v.findViewById( R.id.messageCount );
 
-                endpointText.setText(endpoint.getEndpointID());
+                if (null!= endpoint) {
+                    endpointText.setText(endpoint.getEndpointID());
 
-                if (endpoint.presence instanceof String) {
-                    presenceText.setText((String) endpoint.presence);
-                    presenceText.setVisibility(View.VISIBLE);
+                    if (endpoint.presence instanceof String) {
+                        presenceText.setText((String) endpoint.presence);
+                        presenceText.setVisibility(View.VISIBLE);
+                    } else {
+                        presenceText.setVisibility(View.INVISIBLE);
+                    }
                 } else {
                     presenceText.setVisibility(View.INVISIBLE);
                 }
 
-                if (conversation.unreadCount == 0) {
+
+                if ((null == conversation) || (conversation.unreadCount == 0)) {
                     unreadCountText.setVisibility(View.INVISIBLE);
                 } else {
                     unreadCountText.setText(Integer.toString(conversation.unreadCount));

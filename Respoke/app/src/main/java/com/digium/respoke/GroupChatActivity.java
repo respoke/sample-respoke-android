@@ -5,6 +5,7 @@ import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
+import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.support.v4.content.LocalBroadcastManager;
 import android.util.Log;
@@ -26,6 +27,7 @@ import com.digium.respokesdk.RespokeGroup;
 
 public class GroupChatActivity extends Activity {
 
+    private final static String GROUP_ID_KEY = "groupID";
     private final static String TAG = "GroupChatActivity";
     private RespokeGroup group;
     public Conversation conversation;
@@ -60,11 +62,15 @@ public class GroupChatActivity extends Activity {
 
         // Check whether we're recreating a previously destroyed instance
         if (savedInstanceState != null) {
-            groupID = savedInstanceState.getString("groupID");
+            groupID = savedInstanceState.getString(GROUP_ID_KEY);
         } else {
             Bundle extras = getIntent().getExtras();
             if (extras != null) {
-                groupID = extras.getString("groupID");
+                groupID = extras.getString(GROUP_ID_KEY);
+            } else {
+                // The activity must have been destroyed while it was hidden to save memory. Use the most recent persistent data.
+                SharedPreferences prefs = getSharedPreferences(ConnectActivity.RESPOKE_SETTINGS, 0);
+                groupID = prefs.getString(GROUP_ID_KEY, "");
             }
         }
 
@@ -88,10 +94,10 @@ public class GroupChatActivity extends Activity {
 
     @Override
     public void onSaveInstanceState(Bundle savedInstanceState) {
-        savedInstanceState.putString("groupID", group.getGroupID());
-
         // Always call the superclass so it can save the view hierarchy state
         super.onSaveInstanceState(savedInstanceState);
+
+        savedInstanceState.putString(GROUP_ID_KEY, group.getGroupID());
     }
 
 
@@ -129,6 +135,13 @@ public class GroupChatActivity extends Activity {
         super.onPause();
 
         LocalBroadcastManager.getInstance(this).unregisterReceiver(contactDataInvalidatedReceiver);
+
+        // Save key information in case this activity is killed while it is not visible
+        SharedPreferences prefs = getSharedPreferences(ConnectActivity.RESPOKE_SETTINGS, 0);
+        SharedPreferences.Editor editor = prefs.edit();
+        if (null != group) {
+            editor.putString(GROUP_ID_KEY, group.getGroupID()).apply();
+        }
     }
 
 
