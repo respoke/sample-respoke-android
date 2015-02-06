@@ -38,7 +38,7 @@ import java.util.concurrent.atomic.AtomicInteger;
 public class ConnectActivity extends Activity implements RespokeClient.Listener, View.OnKeyListener, TextWatcher {
 
     private static final String TAG = "ConnectActivity";
-    private static final String RESPOKE_SETTINGS = "RESPOKE_SETTINGS";
+    public static final String RESPOKE_SETTINGS = "RESPOKE_SETTINGS";
     private static final String LAST_USER_KEY = "LAST_USER_KEY";
     private static final String LAST_GROUP_KEY = "LAST_GROUP_KEY";
     private static final String LAST_APP_ID_KEY = "LAST_APP_ID_KEYs";
@@ -358,26 +358,16 @@ public class ConnectActivity extends Activity implements RespokeClient.Listener,
 
                 if (brokeredAuthOn) {
                     // The text in the endpointTextBox is actually the Token ID in this case
-                    ContactManager.sharedInstance().sharedClient.connect(endpointID, null, this, new Respoke.TaskCompletionListener() {
-                        @Override
-                        public void onSuccess() {
-                            // Do nothing. The onConnect delegate method will be called if successful
-                        }
-
+                    ContactManager.sharedInstance().sharedClient.connect(endpointID, null, this, new RespokeClient.ConnectCompletionListener() {
                         @Override
                         public void onError(String errorMessage) {
                             showError(errorMessage);
                         }
                     });
                 } else {
-                    String appID = "57ac5f3a-0513-40b5-ba42-b80939e69436";
+                    String appID = "7c15ec35-71a9-457f-8b73-97caf4eb43ca";
 
-                    ContactManager.sharedInstance().sharedClient.connect(endpointID, appID, true, null, this.getApplicationContext(), new Respoke.TaskCompletionListener() {
-                        @Override
-                        public void onSuccess() {
-                            // Do nothing. The onConnect delegate method will be called if successful
-                        }
-
+                    ContactManager.sharedInstance().sharedClient.connect(endpointID, appID, true, null, this.getApplicationContext(), new RespokeClient.ConnectCompletionListener() {
                         @Override
                         public void onError(String errorMessage) {
                             showError(errorMessage);

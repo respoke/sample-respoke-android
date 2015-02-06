@@ -5,6 +5,7 @@ import com.digium.respokesdk.RespokeDirectConnection;
 import com.digium.respokesdk.RespokeEndpoint;
 
 import android.app.Activity;
+import android.content.SharedPreferences;
 import android.opengl.GLSurfaceView;
 import android.os.Bundle;
 import android.util.Log;
@@ -20,6 +21,9 @@ import android.widget.TextView;
 public class CallActivity extends Activity implements RespokeCall.Listener {
 
     private final static String TAG = "CallActivity";
+    private final static String ENDPOINT_ID_KEY = "endpointID";
+    private final static String CALL_ID_KEY = "callID";
+    private final static String AUDIO_ONLY_KEY = "audioOnly";
     private boolean audioOnly;
     private RespokeCall call;
     private RespokeEndpoint remoteEndpoint;
@@ -39,48 +43,60 @@ public class CallActivity extends Activity implements RespokeCall.Listener {
 
         String remoteEndpointID = null;
         String callID = null;
+        Boolean restoringState = false;
 
         // Check whether we're recreating a previously destroyed instance
         if (savedInstanceState != null) {
-            remoteEndpointID = savedInstanceState.getString("endpointID");
-            callID = savedInstanceState.getString("endpointID");
-            audioOnly = savedInstanceState.getBoolean("audioOnly");
+            remoteEndpointID = savedInstanceState.getString(ENDPOINT_ID_KEY);
+            callID = savedInstanceState.getString(CALL_ID_KEY);
+            audioOnly = savedInstanceState.getBoolean(AUDIO_ONLY_KEY);
+            restoringState = true;
+        } else {
+            Bundle extras = getIntent().getExtras();
+            if (extras == null) {
+                // The activity must have been destroyed while it was hidden to save memory. Use the most recent persistent data.
+                SharedPreferences prefs = getSharedPreferences(ConnectActivity.RESPOKE_SETTINGS, 0);
+                remoteEndpointID = prefs.getString(ENDPOINT_ID_KEY, "");
+                callID = prefs.getString(CALL_ID_KEY, "");
+                audioOnly = prefs.getBoolean(AUDIO_ONLY_KEY, false);
+                restoringState = true;
+            } else {
+                remoteEndpointID = extras.getString(ENDPOINT_ID_KEY);
+                callID = extras.getString(CALL_ID_KEY);
+                audioOnly = extras.getBoolean(AUDIO_ONLY_KEY);
+                restoringState = false;
+            }
+        }
 
+        if (restoringState) {
             remoteEndpoint = ContactManager.sharedInstance().sharedClient.getEndpoint(remoteEndpointID, true);
             call = ContactManager.sharedInstance().sharedClient.callWithID(callID);
 
             //todo: tell the call about the new video view
         } else {
-            Bundle extras = getIntent().getExtras();
-            if (extras != null) {
-                remoteEndpointID = extras.getString("endpointID");
-                callID = extras.getString("callID");
-                audioOnly = extras.getBoolean("audioOnly");
+            if (null != callID) {
+                call = ContactManager.sharedInstance().sharedClient.callWithID(callID);
+            }
 
-                if (null != callID) {
-                    call = ContactManager.sharedInstance().sharedClient.callWithID(callID);
+            remoteEndpoint = ContactManager.sharedInstance().sharedClient.getEndpoint(remoteEndpointID, true);
+
+            if (null == call) {
+                answerView.setVisibility(View.INVISIBLE);
+                if (null != remoteEndpoint) {
+                    call = remoteEndpoint.startCall(this, this, videoView, audioOnly);
                 }
+            } else {
+                answerView.setVisibility(View.VISIBLE);
+                remoteEndpoint = call.endpoint;
+                TextView callerNameView = (TextView) findViewById(R.id.caller_name_text);
 
-                remoteEndpoint = ContactManager.sharedInstance().sharedClient.getEndpoint(remoteEndpointID, true);
-
-                if (null == call) {
-                    answerView.setVisibility(View.INVISIBLE);
-                    if (null != remoteEndpoint) {
-                        call = remoteEndpoint.startCall(this, this, videoView, audioOnly);
-                    }
+                if (null != remoteEndpoint) {
+                    callerNameView.setText(remoteEndpoint.getEndpointID());
                 } else {
-                    answerView.setVisibility(View.VISIBLE);
-                    remoteEndpoint = call.endpoint;
-                    TextView callerNameView = (TextView) findViewById(R.id.caller_name_text);
-
-                    if (null != remoteEndpoint) {
-                        callerNameView.setText(remoteEndpoint.getEndpointID());
-                    } else {
-                        callerNameView.setText("Unknown Caller");
-                    }
-
-                    call.attachVideoRenderer(videoView);
+                    callerNameView.setText("Unknown Caller");
                 }
+
+                call.attachVideoRenderer(videoView);
             }
         }
 
@@ -99,9 +115,9 @@ public class CallActivity extends Activity implements RespokeCall.Listener {
 
     @Override
     public void onSaveInstanceState(Bundle savedInstanceState) {
-        savedInstanceState.putString("endpointID", remoteEndpoint.getEndpointID());
-        savedInstanceState.putString("callID", call.getSessionID());
-        savedInstanceState.putBoolean("audioOnly", audioOnly);
+        savedInstanceState.putString(ENDPOINT_ID_KEY, remoteEndpoint.getEndpointID());
+        savedInstanceState.putString(CALL_ID_KEY, call.getSessionID());
+        savedInstanceState.putBoolean(AUDIO_ONLY_KEY, audioOnly);
 
         // Always call the superclass so it can save the view hierarchy state
         super.onSaveInstanceState(savedInstanceState);
@@ -120,6 +136,19 @@ public class CallActivity extends Activity implements RespokeCall.Listener {
         if (null != call) {
             call.pause();
         }
+
+        // Save key information in case this activity is killed while it is not visible
+        SharedPreferences prefs = getSharedPreferences(ConnectActivity.RESPOKE_SETTINGS, 0);
+        SharedPreferences.Editor editor = prefs.edit();
+        if (null != remoteEndpoint) {
+            editor.putString(ENDPOINT_ID_KEY, remoteEndpoint.getEndpointID()).apply();
+        }
+
+        if (null != call) {
+            editor.putString(CALL_ID_KEY, call.getSessionID());
+        }
+
+        editor.putBoolean(AUDIO_ONLY_KEY, audioOnly);
     }
 
     @Override

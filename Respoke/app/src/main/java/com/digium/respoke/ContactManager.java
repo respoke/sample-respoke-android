@@ -70,7 +70,7 @@ public class ContactManager implements RespokeGroup.Listener, RespokeEndpoint.Li
             ArrayList<String> groupsToJoin = new ArrayList<String>();
             groupsToJoin.add(groupName);
 
-            sharedClient.joinGroups(groupsToJoin, new RespokeClient.JoinGroupCompletionDelegate() {
+            sharedClient.joinGroups(groupsToJoin, new RespokeClient.JoinGroupCompletionListener() {
                 @Override
                 public void onSuccess(final ArrayList<RespokeGroup> groupList) {
                     Log.d(TAG, "Group joined, fetching member list");
