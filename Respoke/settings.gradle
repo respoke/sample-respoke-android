@@ -1,1 +1,3 @@
-include ':app', ':respokeSDK'
+include ':app', ':respokeSDK', ':respokeSDKTest'
+project(':respokeSDK').projectDir = new File('respokeSDK/respokeSDK')
+project(':respokeSDKTest').projectDir = new File('respokeSDK/respokeSDKTest')
