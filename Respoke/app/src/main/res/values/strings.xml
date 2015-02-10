@@ -28,5 +28,6 @@
     <string name="incoming_connection">Incoming Direct Connection</string>
     <string name="answer">Answer</string>
     <string name="ignore">Ignore</string>
+    <string name="endpoint_id_blank">Endpoint ID may not be blank</string>
 
 </resources>

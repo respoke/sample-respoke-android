@@ -68,8 +68,8 @@ public class ConnectActivity extends Activity implements RespokeClient.Listener,
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_connect);
 
-        EditText endpointTextBox = (EditText)findViewById(R.id.editText1);
-        EditText groupTextBox = (EditText)findViewById(R.id.editText2);
+        EditText endpointTextBox = (EditText)findViewById(R.id.endpoint_id_text_box);
+        EditText groupTextBox = (EditText)findViewById(R.id.group_id_text_box);
         TextView errorMessageView = (TextView)findViewById(R.id.error_message);
 
         // Give the Contact manager initial context
@@ -156,11 +156,11 @@ public class ConnectActivity extends Activity implements RespokeClient.Listener,
 
             if (!event.isShiftPressed()) {
                 switch (view.getId()) {
-                    case R.id.editText1:
-                        EditText groupTextBox = (EditText)findViewById(R.id.editText2);
+                    case R.id.endpoint_id_text_box:
+                        EditText groupTextBox = (EditText)findViewById(R.id.group_id_text_box);
                         groupTextBox.requestFocus();
                         break;
-                    case R.id.editText2:
+                    case R.id.group_id_text_box:
                         connect(null);
                         break;
                 }
@@ -331,10 +331,10 @@ public class ConnectActivity extends Activity implements RespokeClient.Listener,
 
 
     public void connect(View view) {
-        Button connectButton = (Button)findViewById(R.id.button1);
+        Button connectButton = (Button)findViewById(R.id.connect_button);
         ProgressBar progressCircle = (ProgressBar)findViewById(R.id.progress_circle);
-        EditText endpointTextBox = (EditText)findViewById(R.id.editText1);
-        EditText groupTextBox = (EditText)findViewById(R.id.editText2);
+        EditText endpointTextBox = (EditText)findViewById(R.id.endpoint_id_text_box);
+        EditText groupTextBox = (EditText)findViewById(R.id.group_id_text_box);
         TextView errorMessageView = (TextView)findViewById(R.id.error_message);
 
         String endpointID = endpointTextBox.getText().toString();
@@ -376,7 +376,7 @@ public class ConnectActivity extends Activity implements RespokeClient.Listener,
                 }
             } else {
                 endpointTextBox.requestFocus();
-                errorMessageView.setText("Username may not be blank");
+                errorMessageView.setText(R.string.endpoint_id_blank);
             }
         }
     }
@@ -385,7 +385,7 @@ public class ConnectActivity extends Activity implements RespokeClient.Listener,
     public void showError(final String message) {
         isConnecting = false;
 
-        Button connectButton = (Button)findViewById(R.id.button1);
+        Button connectButton = (Button)findViewById(R.id.connect_button);
         ProgressBar progressCircle = (ProgressBar)findViewById(R.id.progress_circle);
         TextView errorMessageView = (TextView)findViewById(R.id.error_message);
 
@@ -398,7 +398,7 @@ public class ConnectActivity extends Activity implements RespokeClient.Listener,
     public void onBrokeredAuthClicked(View view) {
         // Is the toggle on?
         brokeredAuthOn = ((ToggleButton) view).isChecked();
-        EditText endpointTextBox = (EditText)findViewById(R.id.editText1);
+        EditText endpointTextBox = (EditText)findViewById(R.id.endpoint_id_text_box);
 
         if (brokeredAuthOn) {
             // Enable Brokered Auth
@@ -416,7 +416,7 @@ public class ConnectActivity extends Activity implements RespokeClient.Listener,
     public void onConnect(RespokeClient sender) {
         Log.d(TAG, "Connected to Respoke! Joining group...");
 
-        EditText groupTextBox = (EditText)findViewById(R.id.editText2);
+        EditText groupTextBox = (EditText)findViewById(R.id.group_id_text_box);
         String defaultGroupID = "RespokeTeam";
         String groupID = groupTextBox.getText().toString();
 
@@ -434,7 +434,7 @@ public class ConnectActivity extends Activity implements RespokeClient.Listener,
                 Intent i = new Intent(ConnectActivity.this, GroupListActivity.class);
                 startActivity(i);
 
-                Button connectButton = (Button)findViewById(R.id.button1);
+                Button connectButton = (Button)findViewById(R.id.connect_button);
                 ProgressBar progressCircle = (ProgressBar)findViewById(R.id.progress_circle);
                 TextView errorMessageView = (TextView)findViewById(R.id.error_message);
 

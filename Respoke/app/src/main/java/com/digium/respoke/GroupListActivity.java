@@ -55,7 +55,7 @@ public class GroupListActivity extends FragmentActivity implements AdapterView.O
 
         listAdapter = new ListDataAdapter();
 
-        ListView lv = (ListView)findViewById(R.id.list); //retrieve the instance of the ListView from your main layout
+        ListView lv = (ListView)findViewById(R.id.group_list); //retrieve the instance of the ListView from your main layout
         lv.setAdapter(listAdapter); //assign the Adapter to be used by the ListView
 
         lv.setOnItemClickListener(this);
