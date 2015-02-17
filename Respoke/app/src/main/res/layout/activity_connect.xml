@@ -19,7 +19,7 @@
         />
 
     <ToggleButton
-        android:id="@+id/togglebutton"
+        android:id="@+id/brokered_auth_toggle_button"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_below="@+id/logo"
@@ -29,10 +29,10 @@
         android:onClick="onBrokeredAuthClicked"/>
 
     <EditText
-        android:id="@+id/editText1"
+        android:id="@+id/endpoint_id_text_box"
         android:layout_width="200dp"
         android:layout_height="wrap_content"
-        android:layout_below="@+id/togglebutton"
+        android:layout_below="@+id/brokered_auth_toggle_button"
         android:layout_marginTop="10dp"
         android:layout_centerHorizontal="true"
         android:hint="@string/endpointID"
@@ -47,10 +47,10 @@
     </EditText>
 
     <EditText
-        android:id="@+id/editText2"
+        android:id="@+id/group_id_text_box"
         android:layout_width="200dp"
         android:layout_height="wrap_content"
-        android:layout_below="@+id/editText1"
+        android:layout_below="@+id/endpoint_id_text_box"
         android:layout_marginTop="5dp"
         android:layout_centerHorizontal="true"
         android:hint="@string/login_group"
@@ -69,19 +69,19 @@
         android:text=""
         android:textColor="#F00"
         android:layout_centerHorizontal="true"
-        android:layout_below="@+id/editText2"
+        android:layout_below="@+id/group_id_text_box"
         android:layout_marginTop="5dp"
         android:textSize="15sp"/>
 
     <RelativeLayout
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_below="@+id/editText2"
+        android:layout_below="@+id/group_id_text_box"
         android:layout_centerHorizontal="true"
         android:layout_marginTop="30dp">
 
         <Button
-            android:id="@+id/button1"
+            android:id="@+id/connect_button"
             android:layout_width="200dp"
             android:layout_height="wrap_content"
             android:onClick="connect"

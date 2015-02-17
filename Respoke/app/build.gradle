@@ -10,6 +10,7 @@ android {
         targetSdkVersion 20
         versionCode 1
         versionName "1.0"
+        testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
     }
     buildTypes {
         release {
@@ -17,10 +18,17 @@ android {
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
         }
     }
+    packagingOptions {
+        exclude 'LICENSE.txt'
+    }
 }
 
 dependencies {
     compile project(':respokeSDK')
     compile fileTree(dir: 'libs', include: ['*.jar'])
     compile 'com.android.support:support-v4:20.0.0'
+
+    // Testing dependencies
+    androidTestCompile 'com.android.support.test.espresso:espresso-core:2.0'
+    androidTestCompile 'com.android.support.test:testing-support-lib:0.1'
 }
