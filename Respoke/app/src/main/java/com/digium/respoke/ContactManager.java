@@ -345,7 +345,7 @@ public class ContactManager implements RespokeGroup.Listener, RespokeEndpoint.Li
     }
 
 
-    public void onGroupMessage(String message, RespokeEndpoint endpoint, RespokeGroup sender) {
+    public void onGroupMessage(String message, RespokeEndpoint endpoint, RespokeGroup sender, Date timestamp) {
         Conversation conversation = groupConversations.get(sender.getGroupID());
         conversation.addMessage(message, endpoint.getEndpointID(), false);
         conversation.unreadCount++;
