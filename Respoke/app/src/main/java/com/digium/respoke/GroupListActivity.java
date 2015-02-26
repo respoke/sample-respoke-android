@@ -449,19 +449,14 @@ public class GroupListActivity extends FragmentActivity implements AdapterView.O
 
 
     public void onConnect(RespokeClient sender) {
-        runOnUiThread(new Runnable() {
-            @Override
-            public void run() {
-                Button presenceButton = (Button) findViewById(R.id.button1);
-                presenceButton.setVisibility(View.VISIBLE);
-                ProgressBar progressCircle = (ProgressBar)findViewById(R.id.progress_circle);
-                progressCircle.setVisibility(View.INVISIBLE);
+        Button presenceButton = (Button) findViewById(R.id.button1);
+        presenceButton.setVisibility(View.VISIBLE);
+        ProgressBar progressCircle = (ProgressBar)findViewById(R.id.progress_circle);
+        progressCircle.setVisibility(View.INVISIBLE);
 
-                if (null != groupsToJoin) {
-                    rejoinGroups();
-                }
-            }
-        });
+        if (null != groupsToJoin) {
+            rejoinGroups();
+        }
     }
 
 
@@ -477,30 +472,18 @@ public class GroupListActivity extends FragmentActivity implements AdapterView.O
 
             ContactManager.sharedInstance().disconnected();
 
-            // Update UI on main thread
-            runOnUiThread(new Runnable() {
-                @Override
-                public void run() {
-                    Button presenceButton = (Button)findViewById(R.id.button1);
-                    presenceButton.setVisibility(View.INVISIBLE);
-                    ProgressBar progressCircle = (ProgressBar)findViewById(R.id.progress_circle);
-                    progressCircle.setVisibility(View.VISIBLE);
+            Button presenceButton = (Button)findViewById(R.id.button1);
+            presenceButton.setVisibility(View.INVISIBLE);
+            ProgressBar progressCircle = (ProgressBar)findViewById(R.id.progress_circle);
+            progressCircle.setVisibility(View.VISIBLE);
 
-                    // Tell the ListView to reconfigure itself based on the new data
-                    listAdapter.notifyDataSetChanged();
-                    listAdapter.notifyDataSetInvalidated();
-                }
-            });
+            // Tell the ListView to reconfigure itself based on the new data
+            listAdapter.notifyDataSetChanged();
+            listAdapter.notifyDataSetInvalidated();
 
             //todo pop to this activity?
         } else {
-            // Update UI on main thread
-            runOnUiThread(new Runnable() {
-                @Override
-                public void run() {
-                    returnToConnectActivity();
-                }
-            });
+            returnToConnectActivity();
         }
     }
 
