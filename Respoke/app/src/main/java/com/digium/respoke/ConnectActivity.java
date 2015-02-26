@@ -27,11 +27,13 @@ import com.digium.respokesdk.RespokeCall;
 import com.digium.respokesdk.RespokeClient;
 import com.digium.respokesdk.RespokeDirectConnection;
 import com.digium.respokesdk.RespokeEndpoint;
+import com.digium.respokesdk.RespokeGroup;
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.GooglePlayServicesUtil;
 import com.google.android.gms.gcm.GoogleCloudMessaging;
 
 import java.io.IOException;
+import java.util.Date;
 import java.util.concurrent.atomic.AtomicInteger;
 
 
@@ -467,6 +469,11 @@ public class ConnectActivity extends Activity implements RespokeClient.Listener,
 
 
     public void onIncomingDirectConnection(RespokeDirectConnection directConnection, RespokeEndpoint endpoint) {
+
+    }
+
+
+    public void onMessage(String message, RespokeEndpoint sender, RespokeGroup group, Date timestamp) {
 
     }
 

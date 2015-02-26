@@ -37,6 +37,7 @@ import com.digium.respokesdk.RespokeGroup;
 
 import java.lang.ref.WeakReference;
 import java.util.ArrayList;
+import java.util.Date;
 
 
 public class GroupListActivity extends FragmentActivity implements AdapterView.OnItemClickListener, RespokeClient.Listener {
@@ -527,4 +528,19 @@ public class GroupListActivity extends FragmentActivity implements AdapterView.O
     }
 
 
+    public void onMessage(String message, RespokeEndpoint sender, RespokeGroup group, Date timestamp) {
+        // If we already know about this endpoint, ignore the message since the endpoint listener will already handle it
+        if (-1 == ContactManager.sharedInstance().allKnownEndpoints.indexOf(sender)) {
+            // Make the contact manager aware of this endpoint
+            ContactManager.sharedInstance().trackEndpoint(sender);
+
+            // Notify any UI listeners that a new endpoint has been discovered
+            Intent intent = new Intent(ContactManager.ENDPOINT_DISCOVERED);
+            intent.putExtra("endpointID", sender.getEndpointID());
+            LocalBroadcastManager.getInstance(this).sendBroadcast(intent);
+
+            // Store the message and notify the UI
+            ContactManager.sharedInstance().onMessage(message, timestamp, sender);
+        }
+    }
 }
