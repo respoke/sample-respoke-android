@@ -69,20 +69,24 @@ public class CallActivity extends Activity implements RespokeCall.Listener {
         }
 
         if (restoringState) {
+            // The call already exists, so just update the variables
             remoteEndpoint = ContactManager.sharedInstance().sharedClient.getEndpoint(remoteEndpointID, true);
             call = ContactManager.sharedInstance().sharedClient.callWithID(callID);
 
             //todo: tell the call about the new video view
         } else {
             if (null != callID) {
+                // If a call ID is already known, get a reference to the call object
                 call = ContactManager.sharedInstance().sharedClient.callWithID(callID);
             }
 
+            // Get a reference to the endpoint with which the call is taking place
             remoteEndpoint = ContactManager.sharedInstance().sharedClient.getEndpoint(remoteEndpointID, true);
 
             if (null == call) {
                 answerView.setVisibility(View.INVISIBLE);
                 if (null != remoteEndpoint) {
+                    // If no call exists, start one
                     call = remoteEndpoint.startCall(this, this, videoView, audioOnly);
                 }
             } else {
@@ -128,12 +132,14 @@ public class CallActivity extends Activity implements RespokeCall.Listener {
     public void onPause() {
         super.onPause();
 
+        // Pause the OpenGL rendering when the activity is paused
         GLSurfaceView videoView = (GLSurfaceView) findViewById(R.id.videoview);
         if (null != videoView) {
             videoView.onPause();
         }
 
         if (null != call) {
+            // Notify the call object that the activity rendering the call has paused
             call.pause();
         }
 
@@ -155,12 +161,14 @@ public class CallActivity extends Activity implements RespokeCall.Listener {
     public void onResume() {
         super.onResume();
 
+        // Resume the OpenGL rendering
         GLSurfaceView videoView = (GLSurfaceView) findViewById(R.id.videoview);
         if (videoView != null) {
             videoView.onResume();
         }
 
         if (null != call) {
+            // Notify the call object that the activity rendering the call has resumed
             call.resume();
         }
     }
@@ -168,6 +176,7 @@ public class CallActivity extends Activity implements RespokeCall.Listener {
 
     @Override
     public void onBackPressed() {
+        // If the back button is pressed on the device, hang up the active call before destroying the activity
         if (null != call) {
             call.hangup(true);
         }
@@ -190,6 +199,7 @@ public class CallActivity extends Activity implements RespokeCall.Listener {
 
 
     public void hangup(View view) {
+        // When the user presses the hangup button, command the call to hang up and close the activity
         if (null != call) {
             call.hangup(true);
         }
@@ -234,61 +244,28 @@ public class CallActivity extends Activity implements RespokeCall.Listener {
     }
 
 
+    // RespokeCall.Listener methods
+
+
     public void onError(final String errorMessage, RespokeCall sender) {
+        // Log any errors to the console
         Log.d(TAG, errorMessage);
-        // Update UI on main thread
-        /*runOnUiThread(new Runnable() {
-            @Override
-            public void run() {
-                AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(
-                        getBaseContext());
-
-                // set title
-                alertDialogBuilder.setTitle("Call Error");
-
-                // set dialog message
-                alertDialogBuilder
-                        .setMessage(errorMessage)
-                        .setCancelable(false)
-                        .setPositiveButton("Ok", new DialogInterface.OnClickListener() {
-                            public void onClick(DialogInterface dialog, int id) {
-                                // if this button is clicked, close
-                                // current activity
-                                CallActivity.this.finish();
-                            }
-                        });
-
-                // create alert dialog
-                AlertDialog alertDialog = alertDialogBuilder.create();
-
-                // show it
-                alertDialog.show();
-            }
-        });*/
     }
 
 
     public void onHangup(RespokeCall sender) {
-        runOnUiThread(new Runnable() {
-            @Override
-            public void run() {
-                finish();
-            }
-        });
+        // When the call hangs up, close this activity
+        finish();
     }
 
 
     public void onConnected(RespokeCall sender) {
-        runOnUiThread(new Runnable() {
-            @Override
-            public void run() {
-                TextView connectingTextView = (TextView) findViewById(R.id.connecting_text_view);
-                ProgressBar progressCircle = (ProgressBar) findViewById(R.id.progress_circle);
+        // When the call has finished connecting, change the UI to show the call related controls
+        TextView connectingTextView = (TextView) findViewById(R.id.connecting_text_view);
+        ProgressBar progressCircle = (ProgressBar) findViewById(R.id.progress_circle);
 
-                connectingTextView.setVisibility(View.INVISIBLE);
-                progressCircle.setVisibility(View.INVISIBLE);
-            }
-        });
+        connectingTextView.setVisibility(View.INVISIBLE);
+        progressCircle.setVisibility(View.INVISIBLE);
     }
 
 
