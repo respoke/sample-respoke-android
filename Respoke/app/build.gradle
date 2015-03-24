@@ -8,8 +8,8 @@ android {
         applicationId "com.digium.respoke"
         minSdkVersion 17
         targetSdkVersion 20
-        versionCode 2
-        versionName "1.1"
+        versionCode 3
+        versionName "1.1.1"
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
     }
     buildTypes {

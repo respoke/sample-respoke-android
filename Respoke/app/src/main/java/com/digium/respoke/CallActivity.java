@@ -29,6 +29,7 @@ public class CallActivity extends Activity implements RespokeCall.Listener {
     private RespokeEndpoint remoteEndpoint;
     private boolean audioMuted;
     private boolean videoMuted;
+    private boolean isHangingUp;
 
 
     @Override
@@ -199,12 +200,17 @@ public class CallActivity extends Activity implements RespokeCall.Listener {
 
 
     public void hangup(View view) {
-        // When the user presses the hangup button, command the call to hang up and close the activity
-        if (null != call) {
-            call.hangup(true);
-        }
+        if (!isHangingUp) {
+            isHangingUp = true;
 
-        finish();
+            // When the user presses the hangup button, command the call to hang up and close the activity
+            if (null != call) {
+                call.hangup(true);
+                call = null;
+            }
+
+            finish();
+        }
     }
 
 
@@ -254,8 +260,13 @@ public class CallActivity extends Activity implements RespokeCall.Listener {
 
 
     public void onHangup(RespokeCall sender) {
-        // When the call hangs up, close this activity
-        finish();
+        if (!isHangingUp) {
+            isHangingUp = true;
+            call = null;
+
+            // When the call hangs up, close this activity
+            finish();
+        }
     }
 
 
