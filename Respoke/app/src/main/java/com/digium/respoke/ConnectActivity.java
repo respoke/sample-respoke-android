@@ -52,11 +52,27 @@ public class ConnectActivity extends Activity implements RespokeClient.Listener,
     private boolean brokeredAuthOn = false;
     private static boolean registered = false;
 
+    private static class Env {
+        public String url;
+        public String appId;
+        public Env(String address, String id) {
+            url = address;
+            appId = id;
+        }
+    };
+    private final Env Integration = new Env("https://api-int.respoke.io", "sdkdemo-int-app-id-1");
+    private final Env Staging = new Env("https://api-st.respoke.io", "sdkdemo-st-app-id-1");
+    private final Env Production = new Env("https://api.respoke.io", "7c15ec35-71a9-457f-8b73-97caf4eb43ca");
+
+    /**
+     * Swap out environment here.
+     */
+    private final Env myEnv = Production;
     /**
      * Substitute you own sender ID here. This is the project number you got
      * from the API Console, as described in "Getting Started."
      */
-    String SENDER_ID = "540194358645";
+    private final String SENDER_ID = "288129740988";
 
     GoogleCloudMessaging gcm;
     AtomicInteger msgId = new AtomicInteger();
@@ -356,6 +372,7 @@ public class ConnectActivity extends Activity implements RespokeClient.Listener,
                 isConnecting = true;
 
                 ContactManager.sharedInstance().sharedClient = Respoke.sharedInstance().createClient(this);
+                ContactManager.sharedInstance().sharedClient.baseURL = myEnv.url;
                 ContactManager.sharedInstance().sharedClient.setListener(this);
 
                 if (brokeredAuthOn) {
@@ -367,9 +384,7 @@ public class ConnectActivity extends Activity implements RespokeClient.Listener,
                         }
                     });
                 } else {
-                    String appID = "7c15ec35-71a9-457f-8b73-97caf4eb43ca";
-
-                    ContactManager.sharedInstance().sharedClient.connect(endpointID, appID, true, null, this.getApplicationContext(), new RespokeClient.ConnectCompletionListener() {
+                    ContactManager.sharedInstance().sharedClient.connect(endpointID, myEnv.appId, true, null, this.getApplicationContext(), new RespokeClient.ConnectCompletionListener() {
                         @Override
                         public void onError(String errorMessage) {
                             showError(errorMessage);
