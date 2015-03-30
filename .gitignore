@@ -1,3 +1,5 @@
+**.iml
+.gradle/
 /Respoke/.gradle
 /Respoke/local.properties
 /Respoke/.idea/workspace.xml
