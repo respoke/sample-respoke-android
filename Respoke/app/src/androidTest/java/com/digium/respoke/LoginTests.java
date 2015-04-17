@@ -1,3 +1,13 @@
+/**
+ * Copyright 2015, Digium, Inc.
+ * All rights reserved.
+ *
+ * This source code is licensed under The MIT License found in the
+ * LICENSE file in the root directory of this source tree.
+ *
+ * For all details and documentation:  https://www.respoke.io
+ */
+
 package com.digium.respoke;
 
 import android.support.test.espresso.action.ViewActions;
@@ -14,9 +24,6 @@ import static org.hamcrest.Matchers.not;
 import com.digium.respoke.GroupListActivity;
 
 
-/**
- * Created by jasonadams on 2/10/15.
- */
 @LargeTest
 public class LoginTests extends RespokeUITestCase<ConnectActivity> {
 

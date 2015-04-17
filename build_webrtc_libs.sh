@@ -1,5 +1,14 @@
 # !/bin/bash
 
+# Copyright 2015, Digium, Inc.
+# All rights reserved.
+#
+# This source code is licensed under The MIT License found in the
+# LICENSE file in the root directory of this source tree.
+#
+# For all details and documentation:  https://www.respoke.io
+
+
 # Set your environment how you want
 PROJECT_ROOT=`pwd`
 DEPOT_TOOLS="$PROJECT_ROOT/depot_tools"
