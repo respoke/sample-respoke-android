@@ -3,10 +3,11 @@
   <component name="ProjectModuleManager">
     <modules>
       <module fileurl="file://$PROJECT_DIR$/Respoke.iml" filepath="$PROJECT_DIR$/Respoke.iml" />
+      <module fileurl="file://$PROJECT_DIR$/Respoke.iml" filepath="$PROJECT_DIR$/Respoke.iml" />
+      <module fileurl="file://$PROJECT_DIR$/app/app.iml" filepath="$PROJECT_DIR$/app/app.iml" />
       <module fileurl="file://$PROJECT_DIR$/app/app.iml" filepath="$PROJECT_DIR$/app/app.iml" />
       <module fileurl="file://$PROJECT_DIR$/respokeSDK/respokeSDK/respokeSDK.iml" filepath="$PROJECT_DIR$/respokeSDK/respokeSDK/respokeSDK.iml" />
       <module fileurl="file://$PROJECT_DIR$/respokeSDK/respokeSDKTest/respokeSDKTest.iml" filepath="$PROJECT_DIR$/respokeSDK/respokeSDKTest/respokeSDKTest.iml" />
     </modules>
   </component>
 </project>
-

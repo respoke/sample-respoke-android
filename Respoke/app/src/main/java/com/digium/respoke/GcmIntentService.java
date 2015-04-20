@@ -1,3 +1,13 @@
+/**
+ * Copyright 2015, Digium, Inc.
+ * All rights reserved.
+ *
+ * This source code is licensed under The MIT License found in the
+ * LICENSE file in the root directory of this source tree.
+ *
+ * For all details and documentation:  https://www.respoke.io
+ */
+
 package com.digium.respoke;
 
 import android.app.IntentService;
@@ -15,9 +25,7 @@ import android.util.Log;
 
 import com.google.android.gms.gcm.GoogleCloudMessaging;
 
-/**
- * Created by jasonadams on 11/20/14.
- */
+
 public class GcmIntentService extends IntentService {
     public static final int NOTIFICATION_ID = 1;
     public static final String TAG = "GcmIntentService";

@@ -1,3 +1,13 @@
+/**
+ * Copyright 2015, Digium, Inc.
+ * All rights reserved.
+ *
+ * This source code is licensed under The MIT License found in the
+ * LICENSE file in the root directory of this source tree.
+ *
+ * For all details and documentation:  https://www.respoke.io
+ */
+
 package com.digium.respoke;
 
 import android.content.Context;
@@ -16,9 +26,7 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 
-/**
- * Created by jasonadams on 9/14/14.
- */
+
 public class ContactManager implements RespokeGroup.Listener, RespokeEndpoint.Listener {
     
     public static final String ENDPOINT_MESSAGE_RECEIVED = "ENDPOINT_MESSAGE_RECEIVED";
