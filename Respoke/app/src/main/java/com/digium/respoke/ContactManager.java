@@ -120,21 +120,6 @@ public class ContactManager implements RespokeGroup.Listener, RespokeEndpoint.Li
                             Intent intent = new Intent(GROUP_MEMBERSHIP_CHANGED);
                             intent.putExtra("groupID", group.getGroupID());
                             LocalBroadcastManager.getInstance(context).sendBroadcast(intent);
-
-                            for (RespokeEndpoint eachEndpoint : groupEndpoints) {
-                                eachEndpoint.registerPresence(new Respoke.TaskCompletionListener() {
-                                    @Override
-                                    public void onSuccess() {
-                                        // do nothing
-                                    }
-
-                                    @Override
-                                    public void onError(String errorMessage) {
-                                        Log.d(TAG, "Error registering presence: " + errorMessage);
-                                    }
-                                });
-                            }
-
                             completionListener.onSuccess();
                         }
 
@@ -255,18 +240,6 @@ public class ContactManager implements RespokeGroup.Listener, RespokeEndpoint.Li
                 Intent intent = new Intent(ENDPOINT_DISCOVERED);
                 intent.putExtra("endpointID", parentEndpoint.getEndpointID());
                 LocalBroadcastManager.getInstance(context).sendBroadcast(intent);
-
-                parentEndpoint.registerPresence(new Respoke.TaskCompletionListener() {
-                    @Override
-                    public void onSuccess() {
-                        // Do nothing
-                    }
-
-                    @Override
-                    public void onError(String errorMessage) {
-                        Log.d(TAG, "Error registering presence: " + errorMessage);
-                    }
-                });
             }
 
             // If this endpoint is not known in this specific group, remember it
