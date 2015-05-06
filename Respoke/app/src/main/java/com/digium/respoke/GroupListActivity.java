@@ -207,6 +207,8 @@ public class GroupListActivity extends FragmentActivity implements AdapterView.O
 
             // send a disconnect either way to let the client clean itself up
             ContactManager.sharedInstance().sharedClient.disconnect();
+            Respoke.sharedInstance().unregisterClient(ContactManager.sharedInstance().sharedClient);
+            ContactManager.sharedInstance().sharedClient = null;
         }
 
         if (notConnected) {
