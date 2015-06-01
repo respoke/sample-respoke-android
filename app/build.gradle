@@ -24,9 +24,8 @@ android {
 }
 
 dependencies {
-    compile project(':respokeSDK')
-    compile fileTree(dir: 'libs', include: ['*.jar'])
-    compile 'com.android.support:support-v4:22.+'
+    compile 'com.digium.respoke:respoke-sdk:1.0.3'
+    compile 'com.android.support:support-v4:22.1.1'
 
     // Testing dependencies
     androidTestCompile 'com.android.support.test.espresso:espresso-core:2.0'
