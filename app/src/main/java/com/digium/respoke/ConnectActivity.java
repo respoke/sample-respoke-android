@@ -49,40 +49,36 @@ import java.util.concurrent.atomic.AtomicInteger;
 
 public class ConnectActivity extends Activity implements RespokeClient.Listener, View.OnKeyListener, TextWatcher {
 
-    private static final String TAG = "ConnectActivity";
+    /**
+     * Substitute your own Respoke application ID here. This is the ID you got from the Respoke
+     * Developer Console when you signed up and defined an application:
+     *
+     * https://portal.respoke.io/#/signup
+     */
+    private static final String RESPOKE_APP_ID = "REPLACE_ME";
+
+    /**
+     * Substitute you own GCMS sender ID here. This is the project number you got
+     * from the Google API Console, as described in "Obtaining Push Credentials":
+     *
+     * https://docs.respoke.io/client/android/android-push-notification-credentials.html
+     */
+    private final String SENDER_ID = "REPLACE_ME";
+
+
     public static final String RESPOKE_SETTINGS = "RESPOKE_SETTINGS";
+    public static final String PROPERTY_REG_ID = "registration_id";
+
+    private static final String TAG = "ConnectActivity";
     private static final String LAST_USER_KEY = "LAST_USER_KEY";
     private static final String LAST_GROUP_KEY = "LAST_GROUP_KEY";
     private static final String LAST_APP_ID_KEY = "LAST_APP_ID_KEYs";
-    private final static int PLAY_SERVICES_RESOLUTION_REQUEST = 9000;
-    public static final String PROPERTY_REG_ID = "registration_id";
+    private static final int PLAY_SERVICES_RESOLUTION_REQUEST = 9000;
     private static final String PROPERTY_APP_VERSION = "appVersion";
 
     private boolean isConnecting = false;
     private boolean brokeredAuthOn = false;
     private static boolean registered = false;
-
-    private static class Env {
-        public String url;
-        public String appId;
-        public Env(String address, String id) {
-            url = address;
-            appId = id;
-        }
-    };
-    private final Env Integration = new Env("https://api-int.respoke.io", "sdkdemo-int-app-id-1");
-    private final Env Staging = new Env("https://api-st.respoke.io", "sdkdemo-st-app-id-1");
-    private final Env Production = new Env("https://api.respoke.io", "7c15ec35-71a9-457f-8b73-97caf4eb43ca");
-
-    /**
-     * Swap out environment here.
-     */
-    private final Env myEnv = Production;
-    /**
-     * Substitute you own sender ID here. This is the project number you got
-     * from the API Console, as described in "Getting Started."
-     */
-    private final String SENDER_ID = "288129740988";
 
     GoogleCloudMessaging gcm;
     AtomicInteger msgId = new AtomicInteger();
@@ -382,7 +378,6 @@ public class ConnectActivity extends Activity implements RespokeClient.Listener,
                 isConnecting = true;
 
                 ContactManager.sharedInstance().sharedClient = Respoke.sharedInstance().createClient(this);
-                ContactManager.sharedInstance().sharedClient.baseURL = myEnv.url;
                 ContactManager.sharedInstance().sharedClient.setListener(this);
 
                 if (brokeredAuthOn) {
@@ -394,7 +389,7 @@ public class ConnectActivity extends Activity implements RespokeClient.Listener,
                         }
                     });
                 } else {
-                    ContactManager.sharedInstance().sharedClient.connect(endpointID, myEnv.appId, true, null, this.getApplicationContext(), new RespokeClient.ConnectCompletionListener() {
+                    ContactManager.sharedInstance().sharedClient.connect(endpointID, RESPOKE_APP_ID, true, null, this.getApplicationContext(), new RespokeClient.ConnectCompletionListener() {
                         @Override
                         public void onError(String errorMessage) {
                             showError(errorMessage);
