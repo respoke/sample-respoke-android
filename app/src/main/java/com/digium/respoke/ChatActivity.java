@@ -311,7 +311,7 @@ public class ChatActivity extends FragmentActivity implements RespokeDirectConne
                     }
                 });
             } else {
-                remoteEndpoint.sendMessage(message, new Respoke.TaskCompletionListener() {
+                remoteEndpoint.sendMessage(message, false, true, new Respoke.TaskCompletionListener() {
                     @Override
                     public void onSuccess() {
                         Log.d(TAG, "message sent");
@@ -442,7 +442,7 @@ public class ChatActivity extends FragmentActivity implements RespokeDirectConne
 
 
     public void acceptConnection(View view) {
-        directConnection.accept();
+        directConnection.accept(this);
         View answerView = findViewById(R.id.answer_view);
         View connectingView = findViewById(R.id.connecting_view);
         answerView.setVisibility(View.INVISIBLE);

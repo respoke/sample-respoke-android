@@ -523,9 +523,9 @@ public class GroupListActivity extends FragmentActivity implements AdapterView.O
     }
 
 
-    public void onMessage(String message, RespokeEndpoint sender, RespokeGroup group, Date timestamp) {
+    public void onMessage(String message, RespokeEndpoint sender, RespokeGroup group, Date timestamp, Boolean didSend) {
         // If we already know about this endpoint, ignore the message since the endpoint listener will already handle it
-        if (-1 == ContactManager.sharedInstance().allKnownEndpoints.indexOf(sender)) {
+        if ((null != didSend) && didSend && (-1 == ContactManager.sharedInstance().allKnownEndpoints.indexOf(sender))) {
             // Make the contact manager aware of this endpoint
             ContactManager.sharedInstance().trackEndpoint(sender);
 
@@ -535,7 +535,7 @@ public class GroupListActivity extends FragmentActivity implements AdapterView.O
             LocalBroadcastManager.getInstance(this).sendBroadcast(intent);
 
             // Store the message and notify the UI
-            ContactManager.sharedInstance().onMessage(message, timestamp, sender);
+            ContactManager.sharedInstance().onMessage(message, timestamp, sender, true);
         }
     }
 }

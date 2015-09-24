@@ -493,7 +493,7 @@ public class ConnectActivity extends Activity implements RespokeClient.Listener,
     }
 
 
-    public void onMessage(String message, RespokeEndpoint sender, RespokeGroup group, Date timestamp) {
+    public void onMessage(String message, RespokeEndpoint sender, RespokeGroup group, Date timestamp, Boolean didSend) {
 
     }
 

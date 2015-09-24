@@ -329,7 +329,10 @@ public class ContactManager implements RespokeGroup.Listener, RespokeEndpoint.Li
     public void onGroupMessage(String message, RespokeEndpoint endpoint, RespokeGroup sender, Date timestamp) {
         Conversation conversation = groupConversations.get(sender.getGroupID());
         conversation.addMessage(message, endpoint.getEndpointID(), false);
-        conversation.unreadCount++;
+
+        if (!endpoint.getEndpointID().equals(username)) {
+            conversation.unreadCount++;
+        }
 
         // Notify any UI listeners that a message has been received from a remote endpoint
         Intent intent = new Intent(GROUP_MESSAGE_RECEIVED);
@@ -341,10 +344,16 @@ public class ContactManager implements RespokeGroup.Listener, RespokeEndpoint.Li
     // RespokeEndpointListener methods
 
 
-    public void onMessage(String message, Date timestamp, RespokeEndpoint sender) {
+    public void onMessage(String message, Date timestamp, RespokeEndpoint sender, boolean didSend) {
         Conversation conversation = conversations.get(sender.getEndpointID());
-        conversation.addMessage(message, sender.getEndpointID(), false);
-        conversation.unreadCount++;
+
+        if (didSend) {
+            conversation.addMessage(message, sender.getEndpointID(), false);
+            conversation.unreadCount++;
+        } else {
+            // This message was sent our user on another device
+            conversation.addMessage(message, username, false);
+        }
 
         // Notify any UI listeners that a message has been received from a remote endpoint
         Intent intent = new Intent(ENDPOINT_MESSAGE_RECEIVED);
