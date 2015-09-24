@@ -204,7 +204,7 @@ public class GroupChatActivity extends Activity {
                 }
             });
 
-            group.sendMessage(message, new Respoke.TaskCompletionListener() {
+            group.sendMessage(message, false, new Respoke.TaskCompletionListener() {
                 @Override
                 public void onSuccess() {
                     Log.d(TAG, "message sent");

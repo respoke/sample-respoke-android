@@ -8,8 +8,8 @@ android {
         applicationId "com.digium.respoke"
         minSdkVersion 17
         targetSdkVersion 22
-        versionCode 4
-        versionName "1.1.2"
+        versionCode 5
+        versionName "1.1.3"
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
     }
     buildTypes {
@@ -24,7 +24,7 @@ android {
 }
 
 dependencies {
-    compile 'com.digium.respoke:respoke-sdk:1.0.3'
+    compile 'com.digium.respoke:respoke-sdk:1.1.2'
     compile 'com.android.support:support-v4:22.1.1'
 
     // Testing dependencies
