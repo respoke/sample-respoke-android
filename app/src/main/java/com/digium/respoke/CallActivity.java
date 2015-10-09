@@ -86,6 +86,7 @@ public class CallActivity extends Activity implements RespokeCall.Listener {
             if (null != callID) {
                 // If a call ID is already known, get a reference to the call object
                 call = ContactManager.sharedInstance().sharedClient.callWithID(callID);
+                call.setListener(this);
             }
 
             // Get a reference to the endpoint with which the call is taking place

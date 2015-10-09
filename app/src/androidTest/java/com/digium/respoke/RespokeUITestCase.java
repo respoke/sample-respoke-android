@@ -11,6 +11,7 @@
 package com.digium.respoke;
 
 import android.app.Activity;
+import android.content.Context;
 import android.support.test.espresso.Espresso;
 import android.support.test.espresso.action.ViewActions;
 import android.support.test.espresso.matcher.ViewMatchers;
@@ -62,7 +63,12 @@ public abstract class RespokeUITestCase<T extends android.app.Activity> extends 
     public static String generateTestGroupID() {
         return "group_" + generateTestEndpointID();
     }
+
     
+    public static String getTestBotEndpointId(Context context) {
+        return "testbot-" + context.getResources().getText(R.string.TEST_BOT_SUFFIX);
+    }
+
 
     Activity getCurrentActivity() throws Throwable {
         getInstrumentation().waitForIdleSync();
