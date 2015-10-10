@@ -84,29 +84,37 @@ public class CallingTests extends RespokeUITestCase<ConnectActivity> {
         testbotEndpoint = ContactManager.sharedInstance().sharedClient.getEndpoint(testbotID, false);
         ContactManager.sharedInstance().trackEndpoint(testbotEndpoint);
 
-        // Send a message to the web test bot to initiate an incoming video call to this android client
-        sendMessageToTestbot(TEST_BOT_CALL_ME_VIDEO_MESSAGE);
+        // Test 4 sequential calls
+        for (int ii = 0; ii < 4; ii++) {
+            // Send a message to the web test bot to initiate an incoming video call to this android client
+            sendMessageToTestbot(TEST_BOT_CALL_ME_VIDEO_MESSAGE);
 
-        // Wait for the incoming call screen to appear
-        waitForActivity(TEST_TIMEOUT, CallActivity.class);
+            // Wait for the incoming call screen to appear
+            waitForActivity(TEST_TIMEOUT, CallActivity.class);
 
-        // Press the answer button
-        onView(withId(R.id.answer_call_button)).check(matches(isDisplayed()));
-        onView(withId(R.id.answer_call_button)).perform(ViewActions.click());
+            // Press the answer button
+            onView(withId(R.id.answer_call_button)).check(matches(isDisplayed()));
+            onView(withId(R.id.answer_call_button)).perform(ViewActions.click());
 
-        onView(withId(R.id.hangup_button)).check(matches(isDisplayed()));
+            onView(withId(R.id.hangup_button)).check(matches(isDisplayed()));
 
-        // Let the call run for a few seconds
-        CountDownLatch activeCallLatch = new CountDownLatch(1);
-        activeCallLatch.await(5, TimeUnit.SECONDS);
+            // Let the call run for a few seconds
+            CountDownLatch activeCallLatch = new CountDownLatch(1);
+            activeCallLatch.await(5, TimeUnit.SECONDS);
 
-        // Hang up the call
-        onView(withId(R.id.hangup_button)).check(matches(isDisplayed()));
-        onView(withId(R.id.hangup_button)).perform(ViewActions.click());
+            if (ii % 2 == 0) {
+                // Hang up the call locally on even-numbered attempts
+                onView(withId(R.id.hangup_button)).check(matches(isDisplayed()));
+                onView(withId(R.id.hangup_button)).perform(ViewActions.click());
+            } else {
+                // Send a message to the web test but to hang up the call from the remote side
+                sendMessageToTestbot(TEST_BOT_HANGUP_MESSAGE);
+            }
 
-        // The UI should return to the group list activity
-        waitForActivity(TEST_TIMEOUT, GroupListActivity.class);
-        
+            // The UI should return to the group list activity
+            waitForActivity(TEST_TIMEOUT, GroupListActivity.class);
+        }
+
         logout();
     }
 
