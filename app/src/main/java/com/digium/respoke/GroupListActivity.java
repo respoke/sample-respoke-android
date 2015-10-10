@@ -291,7 +291,13 @@ public class GroupListActivity extends FragmentActivity implements AdapterView.O
             } else if (position == ContactManager.sharedInstance().groups.size() + 1) {
                 return endpointHeaderText;
             } else {
-                return ContactManager.sharedInstance().allKnownEndpoints.get(position - ContactManager.sharedInstance().groups.size() - 2);
+                int index = position - ContactManager.sharedInstance().groups.size() - 2;
+
+                if (index < ContactManager.sharedInstance().allKnownEndpoints.size()) {
+                    return ContactManager.sharedInstance().allKnownEndpoints.get(index);
+                } else {
+                    return "";
+                }
             }
         }
 
